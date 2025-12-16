@@ -1,0 +1,44 @@
+{
+  "name": "PythonTD",
+  "tree": {
+    "$className": "DataModel",
+    "ServerScriptService": {
+      "$className": "ServerScriptService",
+      "PythonTD": {
+        "$path": "src/server"
+      }
+    },
+    "StarterGui": {
+      "$className": "StarterGui",
+      "PythonTDGui": {
+        "$className": "ScreenGui",
+        "$properties": {
+          "ResetOnSpawn": false,
+          "IgnoreGuiInset": false,
+          "ZIndexBehavior": "Sibling"
+        },
+        "Client": {
+          "$path": "src/client"
+        }
+      }
+    },
+    "ReplicatedStorage": {
+      "$className": "ReplicatedStorage",
+      "PythonTD": {
+        "$path": "src/shared"
+      }
+    },
+    "Workspace": {
+      "$className": "Workspace",
+      "$properties": {
+        "FilteringEnabled": true
+      }
+    },
+    "StarterPlayer": {
+      "$className": "StarterPlayer",
+      "$properties": {
+        "CharacterWalkSpeed": 16
+      }
+    }
+  }
+}

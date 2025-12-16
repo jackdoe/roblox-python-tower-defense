@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Map Editor</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: monospace; background: #1a1a2e; color: #eee; padding: 20px; }
+h1 { margin-bottom: 10px; }
+.toolbar { margin-bottom: 10px; display: flex; gap: 10px; align-items: center; }
+button { padding: 8px 16px; cursor: pointer; background: #16213e; color: #eee; border: 1px solid #0f3460; }
+button:hover { background: #0f3460; }
+button.active { background: #e94560; }
+.grid { display: inline-grid; gap: 1px; background: #333; padding: 1px; }
+.cell { width: 24px; height: 24px; background: #222; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; }
+.cell.path { background: #444; }
+.cell.gate { background: #e94560; }
+.cell.core { background: #00d9ff; }
+#output { margin-top: 20px; background: #16213e; padding: 10px; white-space: pre; font-size: 12px; max-height: 400px; overflow: auto; }
+.info { margin-bottom: 10px; color: #888; }
+</style>
+</head>
+<body>
+<h1>Map Editor</h1>
+<div class="info">Click: toggle path | Tools: select Gate/Core then click to place</div>
+<div class="toolbar">
+<button id="btnPath" class="active">Path (1)</button>
+<button id="btnGate">Gate (G)</button>
+<button id="btnCore">Core (C)</button>
+<button id="btnClear">Clear All</button>
+<span>Size:</span>
+<input type="number" id="width" value="20" min="5" max="50" style="width:50px">
+<span>x</span>
+<input type="number" id="height" value="20" min="5" max="50" style="width:50px">
+<button id="btnResize">Resize</button>
+</div>
+<div class="grid" id="grid"></div>
+<div id="output"></div>
+
+<script>
+let width = 20, height = 20;
+let cells = [];
+let tool = 'path';
+let gatePos = null;
+let corePos = null;
+
+function init() {
+	cells = [];
+	for (let y = 0; y < height; y++) {
+		cells[y] = [];
+		for (let x = 0; x < width; x++) {
+			cells[y][x] = 0;
+		}
+	}
+	gatePos = null;
+	corePos = null;
+	render();
+}
+
+function render() {
+	const grid = document.getElementById('grid');
+	grid.style.gridTemplateColumns = `repeat(${width}, 24px)`;
+	grid.innerHTML = '';
+
+	for (let y = 0; y < height; y++) {
+		for (let x = 0; x < width; x++) {
+			const cell = document.createElement('div');
+			cell.className = 'cell';
+
+			if (gatePos && gatePos.x === x && gatePos.y === y) {
+				cell.classList.add('gate');
+				cell.textContent = 'G';
+			} else if (corePos && corePos.x === x && corePos.y === y) {
+				cell.classList.add('core');
+				cell.textContent = 'C';
+			} else if (cells[y][x] === 1) {
+				cell.classList.add('path');
+			}
+
+			cell.onclick = () => handleClick(x, y);
+			grid.appendChild(cell);
+		}
+	}
+
+	exportAscii();
+}
+
+function handleClick(x, y) {
+	if (tool === 'gate') {
+		if (gatePos && gatePos.x === x && gatePos.y === y) {
+			gatePos = null;
+		} else {
+			gatePos = {x, y};
+			cells[y][x] = 1;
+		}
+	} else if (tool === 'core') {
+		if (corePos && corePos.x === x && corePos.y === y) {
+			corePos = null;
+		} else {
+			corePos = {x, y};
+			cells[y][x] = 1;
+		}
+	} else {
+		cells[y][x] = cells[y][x] ? 0 : 1;
+		if (gatePos && gatePos.x === x && gatePos.y === y && cells[y][x] === 0) gatePos = null;
+		if (corePos && corePos.x === x && corePos.y === y && cells[y][x] === 0) corePos = null;
+	}
+	render();
+}
+
+function exportAscii() {
+	let lines = ['local MAP_LAYOUT = {'];
+	for (let y = 0; y < height; y++) {
+		let row = '\t"';
+		for (let x = 0; x < width; x++) {
+			if (gatePos && gatePos.x === x && gatePos.y === y) {
+				row += 'G';
+			} else if (corePos && corePos.x === x && corePos.y === y) {
+				row += 'C';
+			} else {
+				row += cells[y][x];
+			}
+		}
+		row += '",';
+		lines.push(row);
+	}
+	lines.push('}');
+	document.getElementById('output').textContent = lines.join('\n');
+}
+
+function setTool(t) {
+	tool = t;
+	document.querySelectorAll('.toolbar button').forEach(b => b.classList.remove('active'));
+	document.getElementById('btn' + t.charAt(0).toUpperCase() + t.slice(1)).classList.add('active');
+}
+
+document.getElementById('btnPath').onclick = () => setTool('path');
+document.getElementById('btnGate').onclick = () => setTool('gate');
+document.getElementById('btnCore').onclick = () => setTool('core');
+document.getElementById('btnClear').onclick = () => init();
+document.getElementById('btnResize').onclick = () => {
+	width = parseInt(document.getElementById('width').value) || 20;
+	height = parseInt(document.getElementById('height').value) || 20;
+	init();
+};
+
+init();
+</script>
+</body>
+</html>
