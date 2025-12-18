@@ -335,12 +335,6 @@ RemoteEvents.botBuild.OnServerEvent:Connect(function(player, x, z)
 		end
 	end
 
-	local maxBots = Config.MAX_BOTS or 4
-	if count >= maxBots then
-		RemoteEvents.botBuild:FireClient(player, false, "Max bots reached")
-		return
-	end
-
 	local cost = math.floor(BotStats.BOT_BASE_COST * (BotStats.BOT_COST_MULTIPLIER ^ count))
 	local scrap = WaveManager.getScrap(player.UserId)
 	if scrap < cost then

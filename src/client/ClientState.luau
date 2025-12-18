@@ -7,7 +7,6 @@ ClientState.nextBotCost = 75
 ClientState.currentGundamCount = 0
 ClientState.currentBotCount = 0
 ClientState.MAX_GUNDAMS = 10
-ClientState.MAX_BOTS = 5
 
 ClientState.GUNDAM_BASE_COST = 100
 ClientState.GUNDAM_COST_MULTIPLIER = 1.5

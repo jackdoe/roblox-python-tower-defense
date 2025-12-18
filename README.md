@@ -16,27 +16,27 @@ while True:
 
 ## Ammo Types
 
-Gundams use ammo from their magazine. Player weapons are FREE!
+Gundams use ammo from their magazine. Player weapons cost scrap (half gundam cost, half damage).
 
 ### Gundam Weapons
 
 | Name    | Dmg | Ammo | Rate | Notes    |
 |---------|-----|------|------|----------|
 | BULLET  | 15  | 1    | 0.2s | Fast     |
-| ROCKET  | 80  | 4    | 1.0s | Splash   |
+| ROCKET  | 80  | 4    | 1.0s | Splash, applies OILED |
 | LASER   | 40  | 2    | 0.1s | Burns    |
 | ICE     | 20  | 2    | 0.4s | 60% slow |
 | GRENADE | 60  | 5    | 1.5s | Splash   |
 
 ### Player Weapons
 
-| Name    | Dmg | Rate |
-|---------|-----|------|
-| BULLET  | 15  | 0.3s |
-| ROCKET  | 40  | 1.0s |
-| LASER   | 25  | 0.5s |
-| ICE     | 10  | 0.4s |
-| GRENADE | 60  | 1.5s |
+| Name    | Dmg | Scrap | Rate |
+|---------|-----|-------|------|
+| BULLET  | 7   | 1S    | 0.3s |
+| ROCKET  | 40  | 2S    | 1.0s |
+| LASER   | 20  | 1S    | 0.5s |
+| ICE     | 10  | 1S    | 0.4s |
+| GRENADE | 30  | 2S    | 1.5s |
 
 Player ROCKET applies OILED. Both ICE weapons freeze (60% slow).
 
@@ -168,8 +168,8 @@ if G1.ammo < 50 and self.carrying > 0:
 | `self.scan()` | [Enemy] | Returns list of enemies within range. |
 | `self.set_target(enemy)` | nothing | Locks aim onto an enemy. Required before fire(). |
 | `self.target()` | Enemy/None | Returns currently targeted enemy, or None. |
-| `self.set_range(n)` | nothing | Sets scan/attack range. Min 10, max 60. Farther = less damage. |
-| `self.reload(amount)` | number | Reloads ammo from scrap. Returns amount reloaded. |
+| `self.set_range(n)` | nothing | Sets base scan/attack range (10-60). Less range = more damage (40/range). Power upgrades extend effective range (+20% per power). |
+| `self.reload()` | number | Reloads ammo from scrap (2S per ammo). Returns amount reloaded. |
 | `self.ammo` | number | Current ammo in magazine. |
 | `self.max_ammo` | number | Maximum ammo capacity (300). |
 | `self.hacker` | Player | Access your owner's player. Use `self.hacker.target()` etc. |
@@ -179,7 +179,7 @@ if G1.ammo < 50 and self.carrying > 0:
 
 | Method/Property | Returns | Description |
 |-----------------|---------|-------------|
-| `self.fire(AMMO)` | bool | **[BLOCKING]** Fire at target. FREE! Waits for cooldown (scales with CPU). |
+| `self.fire(AMMO)` | bool | **[BLOCKING]** Fire at target. Costs scrap (see table). Waits for cooldown (scales with CPU). |
 | `self.scan()` | [Enemy] | Returns enemies within range 50. |
 | `self.set_target(enemy)` | nothing | Lock aim onto an enemy. |
 | `self.collect()` | bool | Picks up scrap within range 8. |
@@ -232,7 +232,7 @@ When you scan, you get Enemy objects:
 | `CORE.hp` | Current core health |
 | `CORE.pos` | Core position [0, 0] |
 | `G1, G2, ... G10` | Access other gundams by ID |
-| `B1, B2, B3, B4` | Access bots by ID |
+| `B1, B2, B3, ...` | Access bots by ID |
 
 ## How Python Works
 
@@ -285,19 +285,22 @@ RAM limits your program size (bytecode instructions).
 
 ## Economy
 
+- Starting scrap: 1000
 - Each player has their own scrap balance (not shared!)
 - Scrap drops from killed enemies
 - Your bots deposit scrap to YOUR balance
 - Use `self.drop(n)` to share scrap with teammates
 - Each scrap piece = 10 scrap currency
+- Damage scoreboard shows who's contributing!
 
 ### Costs
 
 | Item | Cost |
 |------|------|
-| Gundam | 100 scrap base (increases per gundam) |
-| Bot | 75 scrap base (increases per bot) |
+| Gundam | 100 scrap base (×1.5 per gundam) |
+| Bot | 75 scrap base (×1.3 per bot, unlimited) |
 | CPU/RAM upgrades | See tables above |
+| Player weapons | 1-2S per shot (see table) |
 
 ## First Challenge
 

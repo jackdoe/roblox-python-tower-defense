@@ -401,11 +401,15 @@ function EnemyManager.updateHpBar(enemy)
 	end
 end
 
-function EnemyManager.damage(enemyId, amount, sourceGundamId)
+function EnemyManager.damage(enemyId, amount, sourceOwnerId)
 	local enemy = enemies[enemyId]
 	if not enemy then return false end
 
 	enemy.hp = enemy.hp - amount
+
+	if WaveManager and sourceOwnerId then
+		WaveManager.addDamage(sourceOwnerId, amount)
+	end
 
 	if deps.EntityRegistry then
 		local entity = deps.EntityRegistry.get(enemyId)
@@ -537,7 +541,7 @@ function EnemyManager.applyBurning(enemyId, duration, damagePerTick)
 	end
 end
 
-function EnemyManager.shock(enemyId, baseDamage, sourceX, sourceZ, botScrap, globalPower)
+function EnemyManager.shock(enemyId, baseDamage, sourceX, sourceZ, botScrap, globalPower, sourceOwnerId)
 	local enemy = enemies[enemyId]
 	if not enemy then return 0 end
 
@@ -569,14 +573,14 @@ function EnemyManager.shock(enemyId, baseDamage, sourceX, sourceZ, botScrap, glo
 				if fire then fire:Destroy() end
 			end
 		end
-		EnemyManager.chainLightning(enemyId, totalDamage * 0.3, sourceX, sourceZ)
+		EnemyManager.chainLightning(enemyId, totalDamage * 0.3, sourceX, sourceZ, sourceOwnerId)
 	end
 
 	if enemy.slowAmount and enemy.slowAmount > 0 then
 		totalDamage = totalDamage * (1 + enemy.slowAmount)
 	end
 
-	EnemyManager.damage(enemyId, math.floor(totalDamage))
+	EnemyManager.damage(enemyId, math.floor(totalDamage), sourceOwnerId)
 	EnemyManager.createShockSparks(enemy)
 
 	return math.floor(totalDamage)
@@ -669,7 +673,7 @@ function EnemyManager.createShatterEffect(enemy)
 	end
 end
 
-function EnemyManager.chainLightning(sourceEnemyId, chainDamage, sourceX, sourceZ)
+function EnemyManager.chainLightning(sourceEnemyId, chainDamage, sourceX, sourceZ, sourceOwnerId)
 	local sourceEnemy = enemies[sourceEnemyId]
 	if not sourceEnemy or not sourceEnemy.character then return end
 
@@ -682,7 +686,7 @@ function EnemyManager.chainLightning(sourceEnemyId, chainDamage, sourceX, source
 	for _, nearbyEnemy in ipairs(nearbyEnemies) do
 		if nearbyEnemy.id ~= sourceEnemyId and chainCount < 3 then
 			EnemyManager.createLightningBolt(sourceHrp.Position, nearbyEnemy.character)
-			EnemyManager.damage(nearbyEnemy.id, chainDamage)
+			EnemyManager.damage(nearbyEnemy.id, chainDamage, sourceOwnerId)
 			EnemyManager.createShockSparks(nearbyEnemy)
 			chainCount = chainCount + 1
 		end

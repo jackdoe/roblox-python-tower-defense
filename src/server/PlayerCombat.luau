@@ -8,40 +8,40 @@ local WaveManager = nil
 
 local AmmoStats = {
 	[1] = {
-		damage = 15,
+		damage = 7,
 		fireRate = 0.3,
-		scrapCost = 2,
+		scrapCost = 1,
 		color = Color3.fromRGB(255, 255, 150),
 		name = "Bullet",
 	},
 	[2] = {
 		damage = 40,
 		fireRate = 1.0,
-		scrapCost = 8,
+		scrapCost = 2,
 		splashRadius = 8,
 		color = Color3.fromRGB(255, 100, 50),
 		name = "Rocket",
 	},
 	[3] = {
-		damage = 25,
+		damage = 20,
 		fireRate = 0.5,
-		scrapCost = 4,
+		scrapCost = 1,
 		color = Color3.fromRGB(255, 50, 50),
 		name = "Laser",
 	},
 	[4] = {
 		damage = 10,
 		fireRate = 0.4,
-		scrapCost = 4,
+		scrapCost = 1,
 		slowAmount = 0.6,
 		slowDuration = 3,
 		color = Color3.fromRGB(100, 200, 255),
 		name = "Ice",
 	},
 	[5] = {
-		damage = 60,
+		damage = 30,
 		fireRate = 1.5,
-		scrapCost = 10,
+		scrapCost = 2,
 		splashRadius = 12,
 		isGrenade = true,
 		color = Color3.fromRGB(100, 255, 100),
@@ -75,14 +75,18 @@ function PlayerCombat.fire(interp, enemy, ammoType)
 	ammoType = ammoType or 1
 	local stats = AmmoStats[ammoType] or AmmoStats[1]
 
+	local playerId = interp.playerId
+	if playerId and WaveManager then
+		local currentScrap = WaveManager.getScrap(playerId)
+		if currentScrap < stats.scrapCost then return false end
+		WaveManager.removeScrap(playerId, stats.scrapCost)
+	end
+
 	local cpuHz = interp.cpuHz or 1
 	local adjustedFireRate = stats.fireRate / cpuHz
 
-	-- Check distance (max range 50)
 	local dist = (enemyHrp.Position - hrp.Position).Magnitude
 	if dist > 50 then return false end
-
-	-- Deal damage (apply power multiplier from interpreter)
 	local power = interp.power or 1
 	local damage = stats.damage * power
 
@@ -99,7 +103,7 @@ function PlayerCombat.fire(interp, enemy, ammoType)
 						if ammoType == 2 and EnemyManager.checkShatterCombo then
 							dmg = EnemyManager.checkShatterCombo(e.id, dmg)
 						end
-						EnemyManager.damage(e.id, dmg)
+						EnemyManager.damage(e.id, dmg, playerId)
 						if ammoType == 2 and EnemyManager.applyOiled then
 							EnemyManager.applyOiled(e.id, 5)
 						end
@@ -108,8 +112,7 @@ function PlayerCombat.fire(interp, enemy, ammoType)
 			end
 		end
 	else
-		-- Single target
-		EnemyManager.damage(enemy.id, damage)
+		EnemyManager.damage(enemy.id, damage, playerId)
 	end
 
 	-- Apply slow for ice/freeze

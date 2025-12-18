@@ -53,8 +53,8 @@ function Interpreters.init(dependencies)
 	syncEvent.Parent = PythonTD
 end
 
-local BASE_CPU_HZ = 1
-local BASE_RAM = 32
+local BASE_CPU_HZ = Config.BASE_CPU_HZ
+local BASE_RAM = Config.BASE_RAM
 
 function Interpreters.create(interpType, ownerId, x, z)
 	local pid = tostring(nextPid)
@@ -319,18 +319,14 @@ function Interpreters.getByName(name)
 	return nil
 end
 
-local CPU_BASE_COST = 100
-local CPU_COST_MULTIPLIER = 1.5
-local CPU_HZ_INCREMENT = 2
-
 function Interpreters.upgradeCPU(pid)
 	local data = interpreters[pid]
 	if not data then return false, "Not found" end
 
 	local interp = data.interpreter
 	local currentHz = interp.cpuHz or BASE_CPU_HZ
-	local upgradeCount = math.floor((currentHz - BASE_CPU_HZ) / CPU_HZ_INCREMENT + 0.5)
-	local cost = math.floor(CPU_BASE_COST * (CPU_COST_MULTIPLIER ^ upgradeCount))
+	local upgradeCount = math.floor((currentHz - BASE_CPU_HZ) / Config.CPU_HZ_INCREMENT + 0.5)
+	local cost = math.floor(Config.CPU_BASE_COST * (Config.CPU_COST_MULTIPLIER ^ upgradeCount))
 
 	if deps.WaveManager then
 		local scrap = deps.WaveManager.getScrap(data.ownerId)
@@ -338,7 +334,7 @@ function Interpreters.upgradeCPU(pid)
 		deps.WaveManager.removeScrap(data.ownerId, cost)
 	end
 
-	interp.cpuHz = currentHz + CPU_HZ_INCREMENT
+	interp.cpuHz = currentHz + Config.CPU_HZ_INCREMENT
 
 	if data.entity and data.type == "gundam" then
 		GundamModel.applyVisualUpgrade(data.entity, interp.cpuHz)
@@ -348,18 +344,14 @@ function Interpreters.upgradeCPU(pid)
 	return true, {cpuHz = interp.cpuHz, cost = cost}
 end
 
-local RAM_BASE_COST = 75
-local RAM_COST_MULTIPLIER = 1.5
-local RAM_INCREMENT = 32
-
 function Interpreters.upgradeRAM(pid)
 	local data = interpreters[pid]
 	if not data then return false, "Not found" end
 
 	local interp = data.interpreter
 	local currentRam = interp.maxBytecode or BASE_RAM
-	local upgradeCount = math.floor((currentRam - BASE_RAM) / RAM_INCREMENT)
-	local cost = math.floor(RAM_BASE_COST * (RAM_COST_MULTIPLIER ^ upgradeCount))
+	local upgradeCount = math.floor((currentRam - BASE_RAM) / Config.RAM_INCREMENT)
+	local cost = math.floor(Config.RAM_BASE_COST * (Config.RAM_COST_MULTIPLIER ^ upgradeCount))
 
 	if deps.WaveManager then
 		local scrap = deps.WaveManager.getScrap(data.ownerId)
@@ -367,7 +359,7 @@ function Interpreters.upgradeRAM(pid)
 		deps.WaveManager.removeScrap(data.ownerId, cost)
 	end
 
-	interp.maxBytecode = currentRam + RAM_INCREMENT
+	interp.maxBytecode = currentRam + Config.RAM_INCREMENT
 
 	if data.entity and data.type == "gundam" then
 		GundamModel.applyColorUpgrade(data.entity, interp.maxBytecode)
@@ -542,6 +534,8 @@ function Interpreters.upgradePower(pid)
 
 	if data.type == "gundam" and data.entity then
 		GundamModel.applyPowerScale(data.entity, interp.power)
+		local baseRange = interp.range or GundamStats.BASE.range
+		interp.dynamicRange = baseRange * (1 + (interp.power - 1) * 0.2)
 	elseif data.type == "bot" and data.entity then
 		BotModel.applyPowerScale(data.entity, interp.power)
 	elseif data.type == "player" and interp.character then
@@ -742,7 +736,7 @@ local function executeBotTask(data, dt)
 			local botScrap = entity.scrapInventory or 0
 			local scrapUsed = math.ceil(botScrap / 2)
 			local unitPower = data.interpreter and data.interpreter.power or 1
-			EnemyManager.shock(enemyId, BotStats.SHOCK_DAMAGE, hrp.Position.X, hrp.Position.Z, scrapUsed, unitPower)
+			EnemyManager.shock(enemyId, BotStats.SHOCK_DAMAGE, hrp.Position.X, hrp.Position.Z, scrapUsed, unitPower, data.ownerId)
 			entity.scrapInventory = botScrap - scrapUsed
 			task.shockExecuted = true
 			task.stunEndTime = tick() + BotStats.SHOCK_STUN_TIME
@@ -774,7 +768,7 @@ local function executeBotTask(data, dt)
 		if EnemyManager and EnemyManager.findInRange then
 			local enemies = EnemyManager.findInRange(hrp.Position.X, hrp.Position.Z, explodeRange)
 			for _, enemy in ipairs(enemies) do
-				EnemyManager.damage(enemy.id, damage)
+				EnemyManager.damage(enemy.id, damage, data.ownerId)
 			end
 		end
 

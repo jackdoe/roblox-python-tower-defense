@@ -6,10 +6,14 @@ local HUD = {}
 local COLORS = UITheme.COLORS
 local TOP_INSET = 48
 
+local SCOREBOARD_TITLE_SIZE = 14
+local SCOREBOARD_ROW_SIZE = 12
+
 function HUD.create(parent, callbacks)
 	local hud = {
 		callbacks = callbacks or {},
 		selection = nil,
+		fontScale = 1.0,
 	}
 
 	local coreDisplay = Instance.new("Frame")
@@ -121,6 +125,41 @@ function HUD.create(parent, callbacks)
 	waveActionCorner.CornerRadius = UDim.new(0, 8)
 	waveActionCorner.Parent = waveActionBtn
 
+	local scoreboardFrame = Instance.new("Frame")
+	scoreboardFrame.Name = "Scoreboard"
+	scoreboardFrame.Size = UDim2.new(0, 160, 0, 120)
+	scoreboardFrame.Position = UDim2.new(1, -175, 0, TOP_INSET + 10)
+	scoreboardFrame.BackgroundColor3 = COLORS.panel
+	scoreboardFrame.Parent = parent
+
+	local scoreboardCorner = Instance.new("UICorner")
+	scoreboardCorner.CornerRadius = UDim.new(0, 8)
+	scoreboardCorner.Parent = scoreboardFrame
+
+	local scoreboardTitle = Instance.new("TextLabel")
+	scoreboardTitle.Name = "Title"
+	scoreboardTitle.Size = UDim2.new(1, -10, 0, 20)
+	scoreboardTitle.Position = UDim2.new(0, 5, 0, 4)
+	scoreboardTitle.BackgroundTransparency = 1
+	scoreboardTitle.Text = "// DMG_LOG"
+	scoreboardTitle.TextColor3 = Color3.fromRGB(255, 176, 0)
+	scoreboardTitle.Font = Enum.Font.Code
+	scoreboardTitle.TextSize = SCOREBOARD_TITLE_SIZE
+	scoreboardTitle.TextXAlignment = Enum.TextXAlignment.Left
+	scoreboardTitle.Parent = scoreboardFrame
+
+	local scoreboardList = Instance.new("Frame")
+	scoreboardList.Name = "List"
+	scoreboardList.Size = UDim2.new(1, -10, 1, -26)
+	scoreboardList.Position = UDim2.new(0, 5, 0, 22)
+	scoreboardList.BackgroundTransparency = 1
+	scoreboardList.Parent = scoreboardFrame
+
+	local scoreboardLayout = Instance.new("UIListLayout")
+	scoreboardLayout.SortOrder = Enum.SortOrder.LayoutOrder
+	scoreboardLayout.Padding = UDim.new(0, 2)
+	scoreboardLayout.Parent = scoreboardList
+
 	local currentPhase = "LOBBY"
 
 	waveActionBtn.MouseButton1Click:Connect(function()
@@ -199,6 +238,54 @@ function HUD.create(parent, callbacks)
 	end
 
 	function hud.setCurrentWeapon(w)
+	end
+
+	function hud.updateScoreboard(damageBoard)
+		for _, child in ipairs(scoreboardList:GetChildren()) do
+			if child:IsA("TextLabel") then
+				child:Destroy()
+			end
+		end
+
+		if not damageBoard then return end
+
+		local localUserId = Players.LocalPlayer and Players.LocalPlayer.UserId
+		local amber = Color3.fromRGB(255, 176, 0)
+		local amberDim = Color3.fromRGB(180, 120, 0)
+		local rowSize = math.floor(SCOREBOARD_ROW_SIZE * hud.fontScale)
+
+		for i, entry in ipairs(damageBoard) do
+			if i > 5 then break end
+
+			local row = Instance.new("TextLabel")
+			row.Name = "Row" .. i
+			row.Size = UDim2.new(1, 0, 0, rowSize + 4)
+			row.BackgroundTransparency = 1
+			row.Font = Enum.Font.Code
+			row.TextSize = rowSize
+			row.TextXAlignment = Enum.TextXAlignment.Left
+			row.LayoutOrder = i
+
+			local name = entry.name or "???"
+			if #name > 8 then name = name:sub(1, 6) .. ".." end
+			local dmg = entry.damage or 0
+			local hexDmg = string.format("0x%X", dmg)
+
+			row.Text = string.format("0x%02X %s: %s", i - 1, name, hexDmg)
+
+			if entry.userId == localUserId then
+				row.TextColor3 = amber
+			else
+				row.TextColor3 = amberDim
+			end
+
+			row.Parent = scoreboardList
+		end
+	end
+
+	function hud.setFontScale(scale)
+		hud.fontScale = scale
+		scoreboardTitle.TextSize = math.floor(SCOREBOARD_TITLE_SIZE * scale)
 	end
 
 	return hud

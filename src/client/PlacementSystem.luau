@@ -117,13 +117,6 @@ end
 function PlacementSystem.enterBotMode(showNotification)
 	if ClientState.botPlacementMode then return end
 
-	if ClientState.currentBotCount >= ClientState.MAX_BOTS then
-		if showNotification then
-			showNotification("BOT LIMIT REACHED", "Max " .. ClientState.MAX_BOTS .. " bots!", "Sell a bot to build more", 4)
-		end
-		return
-	end
-
 	if ClientState.currentScrap < ClientState.nextBotCost then
 		if showNotification then
 			showNotification("NOT ENOUGH SCRAP", "Need " .. ClientState.nextBotCost .. " scrap", "", 3, true)

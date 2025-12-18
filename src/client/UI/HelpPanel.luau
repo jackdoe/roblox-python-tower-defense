@@ -20,16 +20,16 @@ SYNOPSIS
 -------------------------------------------------------------------------------
                                  AMMO TYPES
 -------------------------------------------------------------------------------
-       Gundams use ammo from their magazine. Player weapons are FREE!
+       Gundams use ammo (reload costs 2S per ammo). Player weapons cost scrap.
 
        GUNDAM WEAPONS                        PLAYER WEAPONS
-       Name      Dmg  Ammo  Rate  Notes       Name      Dmg  Rate
-       --------- ---  ----  ----  ------      --------- ---  ----
-       BULLET     15    1   0.2s  Fast        BULLET     15  0.3s
-       ROCKET     80    4   1.0s  Splash      ROCKET     40  1.0s
-       LASER      40    2   0.1s  Burns       LASER      25  0.5s
-       ICE        20    2   0.4s  60% slow    ICE        10  0.4s
-       GRENADE    60    5   1.5s  Splash      GRENADE    60  1.5s
+       Name      Dmg  Ammo  Rate  Notes       Name      Dmg  Cost  Rate
+       --------- ---  ----  ----  ------      --------- ---  ----  ----
+       BULLET     15    1   0.2s  Fast        BULLET      7   1S   0.3s
+       ROCKET     80    4   1.0s  Splash      ROCKET     40   2S   1.0s
+       LASER      40    2   0.1s  Burns       LASER      20   1S   0.5s
+       ICE        20    2   0.4s  60% slow    ICE        10   1S   0.4s
+       GRENADE    60    5   1.5s  Splash      GRENADE    30   2S   1.5s
 
        Player ROCKET applies OILED. Both ICE weapons freeze (60% slow).
 
@@ -183,7 +183,8 @@ SYNOPSIS
            Returns currently targeted enemy, or None.
 
        self.set_range(n)            nothing
-           Sets scan/attack range. Min 10, max 60. Farther = less damage.
+           Sets base range (10-60). Less range = more damage (40/range).
+           Power upgrades extend effective range (+20% per power level).
 
        self.ammo                    number
            Current ammo in magazine.
@@ -194,8 +195,8 @@ SYNOPSIS
        self.hacker                  Player
            Access your owner's player. Use self.hacker.target() etc.
 
-       self.reload(amount)          number
-           Reloads ammo from scrap. Returns amount reloaded.
+       self.reload()                number
+           Reloads ammo from scrap (2S per ammo). Returns amount reloaded.
 
        self.pos                     [x, z]
            Current position relative to core.
@@ -204,7 +205,7 @@ SYNOPSIS
                               PLAYER ABILITIES
 -------------------------------------------------------------------------------
        self.fire(AMMO)              True/False  [BLOCKING]
-           Fire at target. FREE! Waits for cooldown (scales with CPU).
+           Fire at target. Costs scrap (1-2S). Waits for cooldown.
 
        self.scan()                  [Enemy]
            Returns enemies within range 50.
@@ -281,7 +282,7 @@ SYNOPSIS
        CORE.hp                      Current core health
        CORE.pos                     Core position [0, 0]
        G1, G2, ... G10              Access other gundams by ID
-       B1, B2, B3, B4               Access bots by ID
+       B1, B2, B3, ...              Access bots by ID
 
 -------------------------------------------------------------------------------
                             HOW PYTHON WORKS
@@ -342,15 +343,18 @@ SYNOPSIS
 -------------------------------------------------------------------------------
                                  ECONOMY
 -------------------------------------------------------------------------------
+       Starting scrap: 1000
        Each player has their own scrap balance (not shared!)
        Scrap drops from killed enemies.
        Your bots deposit scrap to YOUR balance.
        Use self.drop(n) to share scrap with teammates.
        Each scrap piece = 10 scrap currency.
+       Damage scoreboard (top-right) shows who's contributing!
 
        COSTS
-       Gundam base cost: 100 scrap (increases per gundam)
-       Bot base cost: 75 scrap (increases per bot)
+       Gundam: 100 scrap base (x1.5 per gundam)
+       Bot: 75 scrap base (x1.3 per bot, unlimited)
+       Player weapons: 1-2S per shot
        CPU/RAM upgrades: see tables above
 
 -------------------------------------------------------------------------------
@@ -383,7 +387,7 @@ SYNOPSIS
        - Stack debuffs before SHOCK for multiplicative damage!
        - SHOCK teleports bot to target, then consumes all cargo
        - Bots can teleport([0,0]) to instantly return to core
-       - Higher gundam range = less damage (40 / range multiplier)
+       - Lower range = more damage (40/range). Power extends reach, not damage.
        - Check enemy.is_boss to prioritize threats
        - Use B1.carrying to coordinate between units
 

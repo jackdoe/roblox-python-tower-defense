@@ -25,19 +25,13 @@ local selectionRing = nil
 local selectionRingTarget = nil
 local selectionRingModel = nil
 
-local RING_SIZE = {
-	player = 6,
-	bot = 6,
-	gundam = 10,
-}
-
-local function createSelectionRing(ringType)
+local function createSelectionRing(size)
 	if selectionRing then selectionRing:Destroy() end
-	local size = RING_SIZE[ringType] or 6
+	size = size or 6
 	local ring = Instance.new("Part")
 	ring.Name = "SelectionRing"
 	ring.Shape = Enum.PartType.Cylinder
-	ring.Size = Vector3.new(0.03, size, size)
+	ring.Size = Vector3.new(0.03, size * 2, size * 2)
 	ring.Material = Enum.Material.SmoothPlastic
 	ring.Color = Color3.fromRGB(80, 140, 180)
 	ring.Anchored = true
@@ -49,6 +43,12 @@ local function createSelectionRing(ringType)
 	selectionRing = ring
 	selectionRingModel = nil
 	return ring
+end
+
+local function updateSelectionRingSize(size)
+	if selectionRing then
+		selectionRing.Size = Vector3.new(0.03, size * 2, size * 2)
+	end
 end
 
 local function destroySelectionRing()
@@ -155,8 +155,12 @@ ide = MainIDE.create(screenGui, {
 	end,
 	onTabOpen = function(pid)
 		local interpType = ide:getInterpreterType(pid)
-		if interpType == "gundam" or interpType == "bot" or interpType == "player" then
-			createSelectionRing(interpType)
+		if interpType == "gundam" then
+			local range = ide:getRange(pid)
+			createSelectionRing(range)
+			selectionRingTarget = { id = pid, type = interpType }
+		elseif interpType == "bot" or interpType == "player" then
+			createSelectionRing(3)
 			selectionRingTarget = { id = pid, type = interpType }
 		else
 			destroySelectionRing()
@@ -192,6 +196,11 @@ ide = MainIDE.create(screenGui, {
 	end,
 	onHelp = function()
 		helpPanel.toggle()
+	end,
+	onFontScaleChanged = function(scale)
+		if hud and hud.setFontScale then
+			hud.setFontScale(scale)
+		end
 	end,
 })
 
@@ -300,6 +309,11 @@ interpreterSyncEvent.OnClientEvent:Connect(function(payload)
 	ClientState.nextGundamCost = ClientState.calculateGundamCost()
 	ClientState.nextBotCost = ClientState.calculateBotCost()
 	updateAllEconomy()
+
+	if selectionRingTarget and selectionRingTarget.type == "gundam" then
+		local range = ide:getRange(selectionRingTarget.id)
+		updateSelectionRingSize(range)
+	end
 end)
 
 stateUpdateEvent.OnClientEvent:Connect(function(state)
@@ -343,6 +357,7 @@ waveStateEvent.OnClientEvent:Connect(function(state)
 	hud.updateWave(state.waveNumber, state.enemiesRemaining or 0, state.enemiesTotal or 0)
 	hud.updateCore(state.coreHp or 0, state.coreMaxHp or 1000)
 	hud.updatePhase(state.phase or "LOBBY")
+	hud.updateScoreboard(state.damageBoard)
 	updateAllEconomy()
 	Overlays.updateGameState(state.phase, state.restartTimeRemaining)
 end)

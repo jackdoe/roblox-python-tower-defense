@@ -5,6 +5,7 @@ local EditorPanel = require(script.Parent.EditorPanel)
 
 local PythonTD = ReplicatedStorage:WaitForChild("PythonTD")
 local Python = require(PythonTD.Python)
+local Config = require(PythonTD.Config)
 
 local MainIDE = {}
 local COLORS = UITheme.COLORS
@@ -99,7 +100,7 @@ function MainIDE.create(parent, callbacks)
 	botBuildBtn.Size = UDim2.new(0, 0, 0, 20)
 	botBuildBtn.AutomaticSize = Enum.AutomaticSize.X
 	botBuildBtn.BackgroundColor3 = Color3.fromHex("#333333")
-	botBuildBtn.Text = "+ROBOT (B): 75"
+	botBuildBtn.Text = "+ROBOT (B): 75S"
 	botBuildBtn.TextColor3 = Color3.fromRGB(215, 135, 70)
 	botBuildBtn.Font = Enum.Font.RobotoMono
 	botBuildBtn.TextSize = BASE_TEXT_SIZE
@@ -115,7 +116,7 @@ function MainIDE.create(parent, callbacks)
 	gundamBuildBtn.Size = UDim2.new(0, 0, 0, 20)
 	gundamBuildBtn.AutomaticSize = Enum.AutomaticSize.X
 	gundamBuildBtn.BackgroundColor3 = Color3.fromHex("#333333")
-	gundamBuildBtn.Text = "+GUNDAM (G): 100"
+	gundamBuildBtn.Text = "+GUNDAM (G): 100S"
 	gundamBuildBtn.TextColor3 = Color3.fromRGB(0, 255, 255)
 	gundamBuildBtn.Font = Enum.Font.RobotoMono
 	gundamBuildBtn.TextSize = BASE_TEXT_SIZE
@@ -158,7 +159,7 @@ function MainIDE.create(parent, callbacks)
 	hideBtnPad.PaddingRight = UDim.new(0, 8)
 	hideBtnPad.Parent = hideBtn
 
-	local fontScale = 1.3
+	local fontScale = 1.2
 	local BASE_FONT_SIZES = {}
 	local textElements = {}
 	local editorRef = nil
@@ -193,6 +194,9 @@ function MainIDE.create(parent, callbacks)
 			for _, btn in ipairs(topBarButtons) do
 				btn.Size = UDim2.new(0, 0, 0, math.floor(BASE_TOPBAR_HEIGHT * fontScale))
 			end
+		end
+		if callbacks.onFontScaleChanged then
+			callbacks.onFontScaleChanged(fontScale)
 		end
 	end
 
@@ -440,90 +444,154 @@ function MainIDE.create(parent, callbacks)
 	toolbar.BorderSizePixel = 0
 	toolbar.Parent = colEditor
 
+	local leftBtns = Instance.new("Frame")
+	leftBtns.Name = "LeftButtons"
+	leftBtns.Size = UDim2.new(0, 0, 0, 18)
+	leftBtns.AutomaticSize = Enum.AutomaticSize.X
+	leftBtns.Position = UDim2.new(0, 4, 0.5, 0)
+	leftBtns.AnchorPoint = Vector2.new(0, 0.5)
+	leftBtns.BackgroundTransparency = 1
+	leftBtns.Parent = toolbar
+
+	local leftLayout = Instance.new("UIListLayout")
+	leftLayout.FillDirection = Enum.FillDirection.Horizontal
+	leftLayout.VerticalAlignment = Enum.VerticalAlignment.Center
+	leftLayout.SortOrder = Enum.SortOrder.LayoutOrder
+	leftLayout.Padding = UDim.new(0, 6)
+	leftLayout.Parent = leftBtns
+
 	local runBtn = Instance.new("TextButton")
 	runBtn.Name = "RunBtn"
-	runBtn.Size = UDim2.new(0, 90, 0, 18)
-	runBtn.Position = UDim2.new(0, 4, 0.5, -9)
+	runBtn.Size = UDim2.new(0, 0, 0, 18)
+	runBtn.AutomaticSize = Enum.AutomaticSize.X
 	runBtn.BackgroundColor3 = COLORS.success
-	runBtn.Text = "./script.py"
+	runBtn.Text = "./script.py ^1"
 	runBtn.TextColor3 = COLORS.bg
 	runBtn.Font = Enum.Font.RobotoMono
 	runBtn.TextSize = BASE_TEXT_SIZE
-	runBtn.Parent = toolbar
+	runBtn.LayoutOrder = 1
+	runBtn.Parent = leftBtns
 	Instance.new("UICorner", runBtn).CornerRadius = UDim.new(0, 4)
+	local runBtnPad = Instance.new("UIPadding")
+	runBtnPad.PaddingLeft = UDim.new(0, 6)
+	runBtnPad.PaddingRight = UDim.new(0, 6)
+	runBtnPad.Parent = runBtn
 
 	local gdbBtn = Instance.new("TextButton")
 	gdbBtn.Name = "GdbBtn"
-	gdbBtn.Size = UDim2.new(0, 50, 0, 18)
-	gdbBtn.Position = UDim2.new(0, 98, 0.5, -9)
+	gdbBtn.Size = UDim2.new(0, 0, 0, 18)
+	gdbBtn.AutomaticSize = Enum.AutomaticSize.X
 	gdbBtn.BackgroundColor3 = COLORS.warning
 	gdbBtn.Text = "GDB"
 	gdbBtn.TextColor3 = COLORS.bg
 	gdbBtn.Font = Enum.Font.RobotoMono
 	gdbBtn.TextSize = BASE_TEXT_SIZE
-	gdbBtn.Parent = toolbar
+	gdbBtn.LayoutOrder = 2
+	gdbBtn.Parent = leftBtns
 	Instance.new("UICorner", gdbBtn).CornerRadius = UDim.new(0, 4)
+	local gdbBtnPad = Instance.new("UIPadding")
+	gdbBtnPad.PaddingLeft = UDim.new(0, 6)
+	gdbBtnPad.PaddingRight = UDim.new(0, 6)
+	gdbBtnPad.Parent = gdbBtn
 
 	local dbgBtn = Instance.new("TextButton")
 	dbgBtn.Name = "DbgBtn"
 	dbgBtn.Size = UDim2.new(0, 40, 0, 18)
-	dbgBtn.Position = UDim2.new(0, 152, 0.5, -9)
 	dbgBtn.BackgroundColor3 = COLORS.danger
 	dbgBtn.Text = "DBG"
 	dbgBtn.TextColor3 = COLORS.text
 	dbgBtn.Font = Enum.Font.RobotoMono
 	dbgBtn.TextSize = BASE_TEXT_SIZE
 	dbgBtn.Visible = false
-	dbgBtn.Parent = toolbar
+	dbgBtn.LayoutOrder = 3
+	dbgBtn.Parent = leftBtns
 	Instance.new("UICorner", dbgBtn).CornerRadius = UDim.new(0, 4)
 
 	local defaultBtn = Instance.new("TextButton")
 	defaultBtn.Name = "DefaultBtn"
-	defaultBtn.Size = UDim2.new(0, 60, 0, 18)
-	defaultBtn.Position = UDim2.new(0, 152, 0.5, -9)
+	defaultBtn.Size = UDim2.new(0, 0, 0, 18)
+	defaultBtn.AutomaticSize = Enum.AutomaticSize.X
 	defaultBtn.BackgroundColor3 = Color3.fromHex("#333333")
 	defaultBtn.Text = "DEFAULT"
 	defaultBtn.TextColor3 = Color3.fromRGB(150, 150, 200)
 	defaultBtn.Font = Enum.Font.RobotoMono
 	defaultBtn.TextSize = BASE_TEXT_SIZE
-	defaultBtn.Parent = toolbar
+	defaultBtn.LayoutOrder = 4
+	defaultBtn.Parent = leftBtns
 	Instance.new("UICorner", defaultBtn).CornerRadius = UDim.new(0, 4)
+	local defaultBtnPad = Instance.new("UIPadding")
+	defaultBtnPad.PaddingLeft = UDim.new(0, 6)
+	defaultBtnPad.PaddingRight = UDim.new(0, 6)
+	defaultBtnPad.Parent = defaultBtn
+
+	local rightBtns = Instance.new("Frame")
+	rightBtns.Name = "RightButtons"
+	rightBtns.Size = UDim2.new(0, 0, 0, 18)
+	rightBtns.AutomaticSize = Enum.AutomaticSize.X
+	rightBtns.Position = UDim2.new(1, -4, 0.5, 0)
+	rightBtns.AnchorPoint = Vector2.new(1, 0.5)
+	rightBtns.BackgroundTransparency = 1
+	rightBtns.Parent = toolbar
+
+	local rightLayout = Instance.new("UIListLayout")
+	rightLayout.FillDirection = Enum.FillDirection.Horizontal
+	rightLayout.VerticalAlignment = Enum.VerticalAlignment.Center
+	rightLayout.SortOrder = Enum.SortOrder.LayoutOrder
+	rightLayout.Padding = UDim.new(0, 6)
+	rightLayout.Parent = rightBtns
 
 	local powerBtn = Instance.new("TextButton")
 	powerBtn.Name = "PowerBtn"
-	powerBtn.Size = UDim2.new(0, 100, 0, 18)
-	powerBtn.Position = UDim2.new(1, -230, 0.5, -9)
+	powerBtn.Size = UDim2.new(0, 0, 0, 18)
+	powerBtn.AutomaticSize = Enum.AutomaticSize.X
 	powerBtn.BackgroundColor3 = Color3.fromHex("#333333")
-	powerBtn.Text = "+POWER: 100"
+	powerBtn.Text = "+PWR x2:100S"
 	powerBtn.TextColor3 = Color3.fromRGB(255, 100, 100)
 	powerBtn.Font = Enum.Font.RobotoMono
 	powerBtn.TextSize = BASE_TEXT_SIZE
-	powerBtn.Parent = toolbar
+	powerBtn.LayoutOrder = 1
+	powerBtn.Parent = rightBtns
 	Instance.new("UICorner", powerBtn).CornerRadius = UDim.new(0, 4)
+	local pwrBtnPad = Instance.new("UIPadding")
+	pwrBtnPad.PaddingLeft = UDim.new(0, 6)
+	pwrBtnPad.PaddingRight = UDim.new(0, 6)
+	pwrBtnPad.Parent = powerBtn
 
 	local buyCpuBtn = Instance.new("TextButton")
-	buyCpuBtn.Size = UDim2.new(0, 60, 0, 18)
-	buyCpuBtn.Position = UDim2.new(1, -126, 0.5, -9)
+	buyCpuBtn.Name = "BuyCpuBtn"
+	buyCpuBtn.Size = UDim2.new(0, 0, 0, 18)
+	buyCpuBtn.AutomaticSize = Enum.AutomaticSize.X
 	buyCpuBtn.BackgroundColor3 = Color3.fromHex("#333333")
-	buyCpuBtn.Text = "+CPU"
+	buyCpuBtn.Text = "+CPU:100S"
 	buyCpuBtn.TextColor3 = COLORS.success
 	buyCpuBtn.Font = Enum.Font.RobotoMono
 	buyCpuBtn.TextSize = BASE_TEXT_SIZE
 	buyCpuBtn.Visible = false
-	buyCpuBtn.Parent = toolbar
+	buyCpuBtn.LayoutOrder = 2
+	buyCpuBtn.Parent = rightBtns
 	Instance.new("UICorner", buyCpuBtn).CornerRadius = UDim.new(0, 4)
+	local cpuBtnPad = Instance.new("UIPadding")
+	cpuBtnPad.PaddingLeft = UDim.new(0, 6)
+	cpuBtnPad.PaddingRight = UDim.new(0, 6)
+	cpuBtnPad.Parent = buyCpuBtn
 
 	local buyRamBtn = Instance.new("TextButton")
-	buyRamBtn.Size = UDim2.new(0, 60, 0, 18)
-	buyRamBtn.Position = UDim2.new(1, -62, 0.5, -9)
+	buyRamBtn.Name = "BuyRamBtn"
+	buyRamBtn.Size = UDim2.new(0, 0, 0, 18)
+	buyRamBtn.AutomaticSize = Enum.AutomaticSize.X
 	buyRamBtn.BackgroundColor3 = Color3.fromHex("#333333")
-	buyRamBtn.Text = "+RAM"
+	buyRamBtn.Text = "+RAM:75S"
 	buyRamBtn.TextColor3 = COLORS.warning
 	buyRamBtn.Font = Enum.Font.RobotoMono
 	buyRamBtn.TextSize = BASE_TEXT_SIZE
 	buyRamBtn.Visible = false
-	buyRamBtn.Parent = toolbar
+	buyRamBtn.LayoutOrder = 3
+	buyRamBtn.Parent = rightBtns
 	Instance.new("UICorner", buyRamBtn).CornerRadius = UDim.new(0, 4)
+	local ramBtnPad = Instance.new("UIPadding")
+	ramBtnPad.PaddingLeft = UDim.new(0, 6)
+	ramBtnPad.PaddingRight = UDim.new(0, 6)
+	ramBtnPad.Parent = buyRamBtn
 
 	local editorArea = Instance.new("Frame")
 	editorArea.Size = UDim2.new(1, 0, 1, -(TOOLBAR_HEIGHT + ERROR_HEIGHT))
@@ -625,7 +693,7 @@ function MainIDE.create(parent, callbacks)
 				runBtn.BackgroundColor3 = Color3.fromHex("#555555")
 			end
 
-			runBtn.Text = "./" .. (data.name or "script.py")
+			runBtn.Text = "./" .. (data.name or "script.py") .. " ^1"
 			gdbBtn.Text = "REVERT"
 			gdbBtn.BackgroundColor3 = COLORS.danger
 		end
@@ -661,28 +729,27 @@ function MainIDE.create(parent, callbacks)
 		local isPaused = data.paused
 		local editing = isEditing(data)
 
+		local scriptName = "./" .. (data.name or "script.py") .. " ^1"
+		runBtn.Text = scriptName
+
 		if editing then
-			runBtn.Text = "./" .. (data.name or "script.py")
 			runBtn.BackgroundColor3 = data.compileOk and COLORS.success or Color3.fromHex("#555555")
 			gdbBtn.Text = "REVERT"
 			gdbBtn.BackgroundColor3 = COLORS.danger
 			editor:setReadOnly(false)
 		elseif isPaused then
-			runBtn.Text = "RESUME"
 			runBtn.BackgroundColor3 = COLORS.success
 			gdbBtn.Text = "STEP"
 			gdbBtn.BackgroundColor3 = COLORS.warning
 			editor:setReadOnly(true)
 			stdErrLabel.TextColor3 = COLORS.warning
-			stdErrLabel.Text = "editing disabled: program paused for debugging, click RESUME to edit"
+			stdErrLabel.Text = "paused - click STEP or " .. scriptName .. " to continue"
 		elseif status == "RUNNING" then
-			runBtn.Text = "RUNNING..."
-			runBtn.BackgroundColor3 = Color3.fromHex("#555555")
+			runBtn.BackgroundColor3 = Color3.fromHex("#2d5a2d")
 			gdbBtn.Text = "PAUSE"
 			gdbBtn.BackgroundColor3 = COLORS.warning
 			editor:setReadOnly(false)
 		else
-			runBtn.Text = "./" .. (data.name or "script.py")
 			runBtn.BackgroundColor3 = COLORS.success
 			gdbBtn.Text = "GDB"
 			gdbBtn.BackgroundColor3 = COLORS.warning
@@ -692,9 +759,19 @@ function MainIDE.create(parent, callbacks)
 		buyCpuBtn.Visible = true
 		buyRamBtn.Visible = true
 
+		local currentCpuHz = data.cpuHz or Config.BASE_CPU_HZ
+		local cpuUpgradeCount = math.floor((currentCpuHz - Config.BASE_CPU_HZ) / Config.CPU_HZ_INCREMENT + 0.5)
+		local cpuCost = math.floor(Config.CPU_BASE_COST * (Config.CPU_COST_MULTIPLIER ^ cpuUpgradeCount))
+		buyCpuBtn.Text = string.format("+CPU:%dS", cpuCost)
+
+		local currentRam = data.maxBytecode or Config.BASE_RAM
+		local ramUpgradeCount = math.floor((currentRam - Config.BASE_RAM) / Config.RAM_INCREMENT)
+		local ramCost = math.floor(Config.RAM_BASE_COST * (Config.RAM_COST_MULTIPLIER ^ ramUpgradeCount))
+		buyRamBtn.Text = string.format("+RAM:%dS", ramCost)
+
 		local unitPower = data.power or 1
 		local powerCost = math.floor(100 * (2 ^ (unitPower - 1)))
-		powerBtn.Text = string.format("+PWR x%d: %d", unitPower + 1, powerCost)
+		powerBtn.Text = string.format("+PWR x%d:%dS", unitPower + 1, powerCost)
 
 		clearList(varList)
 		local varNames = {}
@@ -1030,6 +1107,11 @@ function MainIDE.create(parent, callbacks)
 		return interpreters[pid] and interpreters[pid].type
 	end
 
+	function ide:getRange(pid)
+		local data = interpreters[pid]
+		return data and data.dynamicRange or 40
+	end
+
 	function ide:recheckCompile(pid)
 		pid = pid or currentTabId
 		if not pid then return end
@@ -1205,8 +1287,8 @@ function MainIDE.create(parent, callbacks)
 	end)
 
 	function ide:updateEconomy(botCost, gundamCost)
-		botBuildBtn.Text = string.format("+ROBOT (B): %d", botCost or 75)
-		gundamBuildBtn.Text = string.format("+GUNDAM (G): %d", gundamCost or 100)
+		botBuildBtn.Text = string.format("+ROBOT (B): %dS", botCost or 75)
+		gundamBuildBtn.Text = string.format("+GUNDAM (G): %dS", gundamCost or 100)
 	end
 
 	ide.frame = container

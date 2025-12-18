@@ -33,6 +33,7 @@ local state = {
 }
 
 local playerScrap = {}
+local playerDamage = {}
 
 local POWER_COSTS = {100, 200, 400, 800, 1600, 3200}
 
@@ -417,6 +418,20 @@ function WaveManager.getScrap(playerId)
 	return playerScrap[playerId] or 0
 end
 
+function WaveManager.addDamage(playerId, amount)
+	if playerId then
+		playerDamage[playerId] = (playerDamage[playerId] or 0) + amount
+	end
+end
+
+function WaveManager.getDamage(playerId)
+	return playerDamage[playerId] or 0
+end
+
+function WaveManager.getAllDamage()
+	return playerDamage
+end
+
 function WaveManager.getPower()
 	return state.power
 end
@@ -464,6 +479,7 @@ function WaveManager.restart()
 	state.power = 1
 
 	playerScrap = {}
+	playerDamage = {}
 	for _, player in ipairs(Players:GetPlayers()) do
 		WaveManager.initPlayerScrap(player.UserId)
 	end
@@ -510,6 +526,16 @@ function WaveManager.update(dt)
 end
 
 function WaveManager.broadcastState()
+	local damageBoard = {}
+	for _, p in ipairs(Players:GetPlayers()) do
+		table.insert(damageBoard, {
+			userId = p.UserId,
+			name = p.Name,
+			damage = playerDamage[p.UserId] or 0,
+		})
+	end
+	table.sort(damageBoard, function(a, b) return a.damage > b.damage end)
+
 	for _, player in ipairs(Players:GetPlayers()) do
 		local stateData = {
 			phase = state.phase,
@@ -521,6 +547,7 @@ function WaveManager.broadcastState()
 			enemiesTotal = state.enemiesTotal,
 			scrap = playerScrap[player.UserId] or 0,
 			power = state.power,
+			damageBoard = damageBoard,
 		}
 		waveStateEvent:FireClient(player, stateData)
 	end

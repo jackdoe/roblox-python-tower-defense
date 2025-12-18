@@ -106,32 +106,37 @@ Classes.Gundam = {
 			return nil
 		end),
 
-		reload = method({ T.NUMBER }, T.NUMBER, function(deps, gundam, amount)
+		reload = method({}, T.NUMBER, function(deps, gundam)
 			local interp = gundam.interpreter
 			if not interp then return 0 end
 
 			local needed = (interp.maxAmmo or 300) - (interp.ammo or 0)
 			if needed <= 0 then return 0 end
 
-			amount = amount or needed
-			local toReload = math.min(amount, needed)
+			local WaveManager = deps.WaveManager
+			if not WaveManager then return 0 end
 
-			interp.reloadPending = {
-				amount = toReload,
-				startTime = tick(),
-				duration = 1 + (toReload / 50),
-				collected = 0,
-			}
+			local ownerId = gundam.ownerId
+			if not ownerId then return 0 end
 
-			local vm = interp.runtime and interp.runtime.vm
-			if vm and vm.block then vm:block() end
+			local scrap = WaveManager.getScrap(ownerId)
+			local canAfford = math.floor(scrap / 2)
+			local toReload = math.min(needed, canAfford)
+
+			if toReload <= 0 then return 0 end
+
+			WaveManager.removeScrap(ownerId, toReload * 2)
+			interp.ammo = (interp.ammo or 0) + toReload
 
 			return toReload
 		end),
 
 		set_range = method({ T.NUMBER }, T.NIL, function(deps, gundam, range)
 			if gundam.interpreter then
-				gundam.interpreter.dynamicRange = math.clamp(range or 40, 10, 60)
+				local baseRange = math.clamp(range or 40, 10, 60)
+				gundam.interpreter.range = baseRange
+				local power = gundam.interpreter.power or 1
+				gundam.interpreter.dynamicRange = baseRange * (1 + (power - 1) * 0.2)
 			end
 		end),
 
@@ -190,16 +195,16 @@ Classes.Gundam = {
 			if not myHrp or not enemyHrp then return false end
 
 			local dist = (enemyHrp.Position - myHrp.Position).Magnitude
-			local currentRange = interp.dynamicRange or 40
-			if dist > currentRange then
+			local effectiveRange = interp.dynamicRange or 40
+			if dist > effectiveRange then
 				interp.target = nil
 				return false
 			end
 
 			interp.ammo = interp.ammo - ammoStats.ammoCost
 
-			local baseRange = 40
-			local damageMult = baseRange / currentRange
+			local baseRange = interp.range or 40
+			local damageMult = 40 / baseRange
 			local tierDamageMult = interp.tierDamageMultiplier or 1
 			local unitPower = interp.power or 1
 			local finalDamage = math.floor(ammoStats.damage * damageMult * tierDamageMult * unitPower)
@@ -217,14 +222,14 @@ Classes.Gundam = {
 								if ammoType == 2 and EnemyManager.checkShatterCombo then
 									dmg = EnemyManager.checkShatterCombo(e.id, dmg)
 								end
-								EnemyManager.damage(e.id, dmg, gundam.id)
+								EnemyManager.damage(e.id, dmg, gundam.ownerId)
 							end
 						end
 					end
 				end
 			else
 				if finalDamage > 0 then
-					EnemyManager.damage(interp.target, finalDamage, gundam.id)
+					EnemyManager.damage(interp.target, finalDamage, gundam.ownerId)
 				end
 			end
 
