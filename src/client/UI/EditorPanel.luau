@@ -1,3 +1,4 @@
+local UserInputService = game:GetService("UserInputService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local PythonTD = ReplicatedStorage:WaitForChild("PythonTD")
 local Classes = require(PythonTD.Python.Classes)
@@ -404,6 +405,145 @@ function EditorPanel.create(parent, selfType)
 			element.TextSize = math.floor(baseSize * scale)
 		end
 	end
+
+	local function isWordChar(c)
+		return c:match("[%w_]") ~= nil
+	end
+
+	local function findWordBoundary(text, pos, direction)
+		if direction > 0 then
+			while pos <= #text and not isWordChar(text:sub(pos, pos)) do
+				pos = pos + 1
+			end
+			while pos <= #text and isWordChar(text:sub(pos, pos)) do
+				pos = pos + 1
+			end
+		else
+			pos = pos - 1
+			while pos > 0 and not isWordChar(text:sub(pos, pos)) do
+				pos = pos - 1
+			end
+			while pos > 0 and isWordChar(text:sub(pos, pos)) do
+				pos = pos - 1
+			end
+			pos = pos + 1
+		end
+		return pos
+	end
+
+	local function getLineStartEnd(text, pos)
+		local lineStart = 1
+		for i = pos - 1, 1, -1 do
+			if text:sub(i, i) == "\n" then
+				lineStart = i + 1
+				break
+			end
+		end
+		local lineEnd = text:find("\n", pos) or (#text + 1)
+		return lineStart, lineEnd
+	end
+
+	local function getCursorLineCol(text, pos)
+		local line = 1
+		local col = 1
+		for i = 1, math.min(pos - 1, #text) do
+			if text:sub(i, i) == "\n" then
+				line = line + 1
+				col = 1
+			else
+				col = col + 1
+			end
+		end
+		return line, col
+	end
+
+	local function moveCursorVertical(delta)
+		local text = textBox.Text
+		local pos = textBox.CursorPosition
+		if pos < 1 then pos = 1 end
+		local line, col = getCursorLineCol(text, pos)
+		local targetLine = line + delta
+		if targetLine < 1 then return end
+
+		local currentLine = 1
+		local lineStart = 1
+		for i = 1, #text do
+			if currentLine == targetLine then
+				local lineEnd = text:find("\n", i) or (#text + 1)
+				local lineLen = lineEnd - lineStart
+				local newCol = math.min(col, lineLen + 1)
+				textBox.CursorPosition = lineStart + newCol - 1
+				return
+			end
+			if text:sub(i, i) == "\n" then
+				currentLine = currentLine + 1
+				lineStart = i + 1
+			end
+		end
+
+		if currentLine == targetLine then
+			local lineLen = #text - lineStart + 1
+			local newCol = math.min(col, lineLen + 1)
+			textBox.CursorPosition = lineStart + newCol - 1
+		end
+	end
+
+	UserInputService.InputBegan:Connect(function(input, gameProcessed)
+		if not textBox:IsFocused() then return end
+		if input.UserInputType ~= Enum.UserInputType.Keyboard then return end
+
+		local ctrl = UserInputService:IsKeyDown(Enum.KeyCode.LeftControl) or UserInputService:IsKeyDown(Enum.KeyCode.RightControl)
+		local alt = UserInputService:IsKeyDown(Enum.KeyCode.LeftAlt) or UserInputService:IsKeyDown(Enum.KeyCode.RightAlt)
+
+		local text = textBox.Text
+		local pos = textBox.CursorPosition
+		if pos < 1 then pos = 1 end
+
+		if ctrl and not alt then
+			if input.KeyCode == Enum.KeyCode.G then
+				textBox:ReleaseFocus()
+			elseif input.KeyCode == Enum.KeyCode.E then
+				local _, lineEnd = getLineStartEnd(text, pos)
+				textBox.CursorPosition = lineEnd
+			elseif input.KeyCode == Enum.KeyCode.F then
+				if pos <= #text then
+					textBox.CursorPosition = pos + 1
+				end
+			elseif input.KeyCode == Enum.KeyCode.B then
+				if pos > 1 then
+					textBox.CursorPosition = pos - 1
+				end
+			elseif input.KeyCode == Enum.KeyCode.P then
+				moveCursorVertical(-1)
+			elseif input.KeyCode == Enum.KeyCode.N then
+				moveCursorVertical(1)
+			elseif input.KeyCode == Enum.KeyCode.H then
+				if pos > 1 and not isReadOnly then
+					textBox.Text = text:sub(1, pos - 2) .. text:sub(pos)
+					textBox.CursorPosition = pos - 1
+				end
+			elseif input.KeyCode == Enum.KeyCode.D then
+				if pos <= #text and not isReadOnly then
+					textBox.Text = text:sub(1, pos - 1) .. text:sub(pos + 1)
+				end
+			elseif input.KeyCode == Enum.KeyCode.K then
+				if not isReadOnly then
+					local _, lineEnd = getLineStartEnd(text, pos)
+					if pos < lineEnd then
+						textBox.Text = text:sub(1, pos - 1) .. text:sub(lineEnd)
+					elseif pos <= #text then
+						textBox.Text = text:sub(1, pos - 1) .. text:sub(pos + 1)
+					end
+				end
+			end
+		elseif alt and not ctrl then
+			if input.KeyCode == Enum.KeyCode.F then
+				textBox.CursorPosition = findWordBoundary(text, pos, 1)
+			elseif input.KeyCode == Enum.KeyCode.B then
+				textBox.CursorPosition = findWordBoundary(text, pos, -1)
+			end
+		end
+	end)
 
 	return panel
 end
