@@ -244,21 +244,21 @@ Your code goes through 3 stages before running:
 
 3. **VIRTUAL MACHINE (VM)** - Executes bytecode one instruction at a time. Uses a stack to compute values. Each CPU tick runs multiple instructions.
 
-## CPU and RAM
+## CPU, RAM, and Power
 
-Each unit has CPU speed (Hz) and RAM (bytes).
+Each unit has CPU speed (Hz), RAM (bytes), and Power multiplier.
 
 ### CPU (Speed)
 
 - Base: 1 Hz
 - Each upgrade: +2 Hz
-- Cost: 100 scrap, then x1.5 per upgrade
+- Cost: 200 scrap, then x2 per upgrade
 
 | Upgrade | Cost |
 |---------|------|
-| 1 Hz -> 3 Hz | 100 scrap |
-| 3 Hz -> 5 Hz | 150 scrap |
-| 5 Hz -> 7 Hz | 225 scrap |
+| 1 Hz -> 3 Hz | 200 scrap |
+| 3 Hz -> 5 Hz | 400 scrap |
+| 5 Hz -> 7 Hz | 800 scrap |
 
 Higher Hz = your program runs faster AND you fire faster!
 - Fire rate scales with CPU: `actualRate = baseRate / cpuHz`
@@ -283,6 +283,20 @@ RAM limits your program size (bytecode instructions).
 - Simple loop = ~15 bytes
 - Full AI = ~60+ bytes
 
+### Power (Damage Multiplier)
+
+- Base: x1
+- Each upgrade: +1x
+- Cost: 200 scrap, then x2 per upgrade
+
+| Upgrade | Cost |
+|---------|------|
+| x1 -> x2 | 200 scrap |
+| x2 -> x3 | 400 scrap |
+| x3 -> x4 | 800 scrap |
+
+Power multiplies all damage dealt by the unit. Also extends effective range (+20% per power level).
+
 ## Economy
 
 - Starting scrap: 1000
@@ -299,7 +313,7 @@ RAM limits your program size (bytecode instructions).
 |------|------|
 | Gundam | 100 scrap base (×1.5 per gundam) |
 | Bot | 75 scrap base (×1.3 per bot, unlimited) |
-| CPU/RAM upgrades | See tables above |
+| CPU/RAM/Power upgrades | See tables above |
 | Player weapons | 1-2S per shot (see table) |
 
 ## First Challenge
@@ -333,6 +347,6 @@ This is the machinist's dilemma: code efficiency vs upgrades.
 - Stack debuffs before SHOCK for multiplicative damage!
 - SHOCK teleports bot to target, then consumes all cargo
 - Bots can `teleport([0,0])` to instantly return to core
-- Higher gundam range = less damage (40 / range multiplier)
+- Lower range = more damage (40/range). Power boosts both damage and range.
 - Check `enemy.is_boss` to prioritize threats
 - Use `B1.carrying` to coordinate between units

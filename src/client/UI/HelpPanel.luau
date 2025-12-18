@@ -307,18 +307,18 @@ SYNOPSIS
           Each CPU tick runs multiple instructions.
 
 -------------------------------------------------------------------------------
-                              CPU AND RAM
+                           CPU, RAM, AND POWER
 -------------------------------------------------------------------------------
-       Each unit has CPU speed (Hz) and RAM (bytes).
+       Each unit has CPU speed (Hz), RAM (bytes), and Power multiplier.
 
        CPU (SPEED)
        Base: 1 Hz       Each upgrade: +2 Hz
-       Cost: 100 scrap, then x1.5 per upgrade
+       Cost: 200 scrap, then x2 per upgrade
 
        Example costs:
-         1 Hz -> 3 Hz    100 scrap
-         3 Hz -> 5 Hz    150 scrap
-         5 Hz -> 7 Hz    225 scrap
+         1 Hz -> 3 Hz    200 scrap
+         3 Hz -> 5 Hz    400 scrap
+         5 Hz -> 7 Hz    800 scrap
          ...and so on
 
        Higher Hz = your program runs faster AND you fire faster!
@@ -341,6 +341,19 @@ SYNOPSIS
        RAM limits your program size (bytecode instructions).
        More RAM = longer, more complex programs.
        Simple loop = ~15 bytes. Full AI = ~60+ bytes.
+
+       POWER (DAMAGE MULTIPLIER)
+       Base: x1         Each upgrade: +1x
+       Cost: 200 scrap, then x2 per upgrade
+
+       Example costs:
+         x1 -> x2       200 scrap
+         x2 -> x3       400 scrap
+         x3 -> x4       800 scrap
+         ...and so on
+
+       Power multiplies all damage dealt by the unit.
+       Also extends effective range: +20% per power level.
 
 -------------------------------------------------------------------------------
                                  ECONOMY
@@ -389,7 +402,7 @@ SYNOPSIS
        - Stack debuffs before SHOCK for multiplicative damage!
        - SHOCK teleports bot to target, then consumes all cargo
        - Bots can teleport([0,0]) to instantly return to core
-       - Lower range = more damage (40/range). Power extends reach, not damage.
+       - Lower range = more damage (40/range). Power boosts both damage and range.
        - Check enemy.is_boss to prioritize threats
        - Use B1.carrying to coordinate between units
 

@@ -771,7 +771,7 @@ function MainIDE.create(parent, callbacks)
 		buyRamBtn.Text = string.format("+RAM:%dS", ramCost)
 
 		local unitPower = data.power or 1
-		local powerCost = math.floor(100 * (2 ^ (unitPower - 1)))
+		local powerCost = math.floor(200 * (2 ^ (unitPower - 1)))
 		powerBtn.Text = string.format("+PWR x%d:%dS", unitPower + 1, powerCost)
 
 		clearList(varList)
