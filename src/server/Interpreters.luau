@@ -83,7 +83,6 @@ function Interpreters.create(interpType, ownerId, x, z)
 		}
 
 		character:SetAttribute("GundamId", pid)
-
 	elseif interpType == "bot" then
 		name = "B" .. pid .. ".py"
 
@@ -198,7 +197,7 @@ while True:
         self.fire(BULLET)
 ]]
 
-	local gameEnv = Python.createPlayerEnvironment({UserId = ownerId}, interp, deps)
+	local gameEnv = Python.createPlayerEnvironment({ UserId = ownerId }, interp, deps)
 	interp:setGameEnvironment(gameEnv)
 	interp:load(defaultProgram)
 	interp.lastProgram = defaultProgram
@@ -341,7 +340,7 @@ function Interpreters.upgradeCPU(pid)
 	end
 
 	data.gen = data.gen + 1
-	return true, {cpuHz = interp.cpuHz, cost = cost}
+	return true, { cpuHz = interp.cpuHz, cost = cost }
 end
 
 function Interpreters.upgradeRAM(pid)
@@ -366,7 +365,7 @@ function Interpreters.upgradeRAM(pid)
 	end
 
 	data.gen = data.gen + 1
-	return true, {maxBytecode = interp.maxBytecode, cost = cost}
+	return true, { maxBytecode = interp.maxBytecode, cost = cost }
 end
 
 function Interpreters.run(pid, ticks, freeSteps)
@@ -510,7 +509,7 @@ function Interpreters.updateName(pid, name)
 	end
 end
 
-local POWER_BASE_COST = 100
+local POWER_BASE_COST = 200
 local POWER_COST_MULTIPLIER = 2
 local POWER_INCREMENT = 1
 
@@ -553,7 +552,7 @@ function Interpreters.upgradePower(pid)
 		end
 	end
 
-	return true, {power = interp.power, cost = cost}
+	return true, { power = interp.power, cost = cost }
 end
 
 local function collectScrap(entity)
@@ -651,7 +650,6 @@ local function executeBotTask(data, dt)
 		entity.isMoving = true
 		entity.status = "COLLECTING"
 		return "RUNNING"
-
 	elseif task.type == "TELEPORT" then
 		local targetX = task.args.x
 		local targetZ = task.args.z
@@ -680,7 +678,6 @@ local function executeBotTask(data, dt)
 		entity.status = "IDLE"
 		task.result = true
 		return "DONE"
-
 	elseif task.type == "MOVE" then
 		local targetX = task.args.x
 		local targetZ = task.args.z
@@ -713,7 +710,6 @@ local function executeBotTask(data, dt)
 		entity.isMoving = true
 		entity.status = "MOVING"
 		return "RUNNING"
-
 	elseif task.type == "SHOCK" then
 		local enemyId = task.args.enemyId
 		local EnemyManager = deps.EnemyManager
@@ -736,7 +732,8 @@ local function executeBotTask(data, dt)
 			local botScrap = entity.scrapInventory or 0
 			local scrapUsed = math.ceil(botScrap / 2)
 			local unitPower = data.interpreter and data.interpreter.power or 1
-			EnemyManager.shock(enemyId, BotStats.SHOCK_DAMAGE, hrp.Position.X, hrp.Position.Z, scrapUsed, unitPower, data.ownerId)
+			EnemyManager.shock(enemyId, BotStats.SHOCK_DAMAGE, hrp.Position.X, hrp.Position.Z, scrapUsed, unitPower,
+				data.ownerId)
 			entity.scrapInventory = botScrap - scrapUsed
 			task.shockExecuted = true
 			task.stunEndTime = tick() + BotStats.SHOCK_STUN_TIME
@@ -752,7 +749,6 @@ local function executeBotTask(data, dt)
 			end
 			return "RUNNING"
 		end
-
 	elseif task.type == "EXPLODE" then
 		local cargo = entity.scrapInventory or 0
 		if cargo < 10 then
@@ -908,7 +904,6 @@ function Interpreters.startUpdateLoop()
 				interp:update(dt)
 				updateGundam(data, dt)
 				GundamModel.updateBillboard(data.entity)
-
 			elseif data.type == "bot" and data.entity then
 				local interp = data.interpreter
 				if not data.entity.waitingForTask then

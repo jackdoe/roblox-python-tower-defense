@@ -59,10 +59,10 @@ local EnemyTypes = {
 }
 
 local WaveScaling = {
-	hpPerWave = 0.25,
-	damagePerWave = 0.10,
-	sizePerWave = 0.05,
-	speedPerWave = 0.02,
+	hpPerWave = 0.50,
+	damagePerWave = 0.20,
+	sizePerWave = 0.10,
+	speedPerWave = 0.04,
 	maxSpeedMult = 2.5,
 }
 
