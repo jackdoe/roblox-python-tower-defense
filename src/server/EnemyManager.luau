@@ -249,10 +249,24 @@ function EnemyManager.spawn(typeName, gateIndex)
 		character:PivotTo(CFrame.new(spawnPos))
 	end
 
+	local humanoid = character:FindFirstChild("Humanoid")
+	if humanoid then
+		humanoid:SetStateEnabled(Enum.HumanoidStateType.FallingDown, false)
+		humanoid:SetStateEnabled(Enum.HumanoidStateType.Running, false)
+		humanoid:SetStateEnabled(Enum.HumanoidStateType.Climbing, false)
+		humanoid:SetStateEnabled(Enum.HumanoidStateType.Ragdoll, false)
+		humanoid:SetStateEnabled(Enum.HumanoidStateType.GettingUp, false)
+		humanoid:SetStateEnabled(Enum.HumanoidStateType.Jumping, false)
+		humanoid:SetStateEnabled(Enum.HumanoidStateType.Swimming, false)
+		humanoid:SetStateEnabled(Enum.HumanoidStateType.Physics, false)
+	end
+
 	for _, part in ipairs(character:GetDescendants()) do
 		if part:IsA("BasePart") then
 			part.Anchored = true
 			part.CanCollide = false
+			part.CastShadow = false
+			part.Massless = true
 		end
 	end
 

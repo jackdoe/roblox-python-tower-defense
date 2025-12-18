@@ -20,16 +20,16 @@ SYNOPSIS
 -------------------------------------------------------------------------------
                                  AMMO TYPES
 -------------------------------------------------------------------------------
-       Gundams use ammo from their magazine. Players spend scrap per shot.
+       Gundams use ammo from their magazine. Player weapons are FREE!
 
        GUNDAM WEAPONS                        PLAYER WEAPONS
-       Name      Dmg  Ammo  Rate  Notes       Name      Dmg  Scrap  Rate
-       --------- ---  ----  ----  ------      --------- ---  -----  ----
-       BULLET     15    1   0.2s  Fast        BULLET     15     2   0.3s
-       ROCKET     80    4   1.0s  Splash      ROCKET     40     8   1.0s
-       LASER      40    2   0.1s  Burns       LASER      25     4   0.5s
-       ICE        20    2   0.4s  60% slow    ICE        10     4   0.4s
-       GRENADE    60    5   1.5s  Splash      GRENADE    60    10   1.5s
+       Name      Dmg  Ammo  Rate  Notes       Name      Dmg  Rate
+       --------- ---  ----  ----  ------      --------- ---  ----
+       BULLET     15    1   0.2s  Fast        BULLET     15  0.3s
+       ROCKET     80    4   1.0s  Splash      ROCKET     40  1.0s
+       LASER      40    2   0.1s  Burns       LASER      25  0.5s
+       ICE        20    2   0.4s  60% slow    ICE        10  0.4s
+       GRENADE    60    5   1.5s  Splash      GRENADE    60  1.5s
 
        Player ROCKET applies OILED. Both ICE weapons freeze (60% slow).
 
@@ -128,7 +128,7 @@ SYNOPSIS
        self.shock(enemy)            True/False
            Teleports to enemy and zaps for 30 base damage. Triggers combos!
            Damage scales with cargo: 30 × 1.5^cargo (exponential!)
-           CONSUMES ALL CARGO after shocking!
+           Consumes HALF your cargo (rounded up).
            5 cargo = 228 dmg, 10 cargo = 1732 dmg!
 
        self.teleport([x, z])        True/False
@@ -164,6 +164,9 @@ SYNOPSIS
        self.pos                     [x, z]
            Current position relative to core.
 
+       self.hacker                  Player
+           Access your owner's player. Use self.hacker.target() etc.
+
 -------------------------------------------------------------------------------
                               GUNDAM ABILITIES
 -------------------------------------------------------------------------------
@@ -188,6 +191,9 @@ SYNOPSIS
        self.max_ammo                number
            Maximum ammo capacity (300).
 
+       self.hacker                  Player
+           Access your owner's player. Use self.hacker.target() etc.
+
        self.reload(amount)          number
            Reloads ammo from scrap. Returns amount reloaded.
 
@@ -198,7 +204,7 @@ SYNOPSIS
                               PLAYER ABILITIES
 -------------------------------------------------------------------------------
        self.fire(AMMO)              True/False  [BLOCKING]
-           Fire at target. Costs scrap. Waits for cooldown (scales with CPU).
+           Fire at target. FREE! Waits for cooldown (scales with CPU).
 
        self.scan()                  [Enemy]
            Returns enemies within range 50.
@@ -211,6 +217,9 @@ SYNOPSIS
 
        self.max_capacity            number
            Maximum scrap player can carry (10).
+
+       self.hacker                  Player
+           Returns yourself. Try self.hacker.hacker.hacker.target()!
 
        self.collect()               True/False
            Picks up scrap within range 8.

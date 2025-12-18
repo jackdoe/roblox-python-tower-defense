@@ -90,6 +90,22 @@ Classes.Gundam = {
 			return gundam.interpreter and gundam.interpreter.maxAmmo or 300
 		end),
 
+		hacker = prop(T.PLAYER, function(deps, gundam)
+			local Interpreters = deps.Interpreters
+			if not Interpreters or not gundam.ownerId then return nil end
+			for _, data in pairs(Interpreters.getByType("player")) do
+				if data.ownerId == gundam.ownerId then
+					return Classes.buildProxy("Player", {
+						id = "player",
+						playerId = data.ownerId,
+						character = data.interpreter.character,
+						interpreter = data.interpreter,
+					}, deps)
+				end
+			end
+			return nil
+		end),
+
 		reload = method({ T.NUMBER }, T.NUMBER, function(deps, gundam, amount)
 			local interp = gundam.interpreter
 			if not interp then return 0 end
@@ -264,6 +280,22 @@ Classes.Bot = {
 			return { 0, 0 }
 		end),
 
+		hacker = prop(T.PLAYER, function(deps, bot)
+			local Interpreters = deps.Interpreters
+			if not Interpreters or not bot.ownerId then return nil end
+			for _, data in pairs(Interpreters.getByType("player")) do
+				if data.ownerId == bot.ownerId then
+					return Classes.buildProxy("Player", {
+						id = "player",
+						playerId = data.ownerId,
+						character = data.interpreter.character,
+						interpreter = data.interpreter,
+					}, deps)
+				end
+			end
+			return nil
+		end),
+
 		carrying = prop(T.NUMBER, function(deps, bot)
 			return bot.scrapInventory or 0
 		end),
@@ -283,8 +315,9 @@ Classes.Bot = {
 			local dirZ = -math.cos(facingAngle)
 			local targetX = hrp.Position.X + dirX * steps
 			local targetZ = hrp.Position.Z + dirZ * steps
+			local coreX, coreZ = deps.getCoreOffset()
 
-			return queueTask(bot, "MOVE", { x = targetX, z = targetZ }, true)
+			return Classes.Bot.members.teleport.impl(deps, bot, { targetX - coreX, targetZ - coreZ })
 		end),
 
 		backward = method({ T.NUMBER }, T.BOOL, function(deps, bot, steps)
@@ -450,30 +483,24 @@ Classes.Player = {
 			return player.interpreter and player.interpreter.maxCapacity or 10
 		end),
 
+		hacker = prop(T.PLAYER, function(deps, player)
+			return Classes.buildProxy("Player", player, deps)
+		end),
+
 		forward = method({ T.NUMBER }, T.BOOL, function(deps, player, steps)
 			steps = steps or 10
 			if not player.character then return false end
 			local hrp = player.character:FindFirstChild("HumanoidRootPart")
-			local humanoid = player.character:FindFirstChild("Humanoid")
-			if not hrp or not humanoid then return false end
+			if not hrp then return false end
 
 			local lookVector = hrp.CFrame.LookVector
 			local targetPos = hrp.Position + lookVector * steps
-			humanoid:MoveTo(targetPos)
-			return true
+			local coreX, coreZ = deps.getCoreOffset()
+			return Classes.Player.members.teleport.impl(deps, player, { targetPos.X - coreX, targetPos.Z - coreZ })
 		end),
 
 		backward = method({ T.NUMBER }, T.BOOL, function(deps, player, steps)
-			steps = steps or 10
-			if not player.character then return false end
-			local hrp = player.character:FindFirstChild("HumanoidRootPart")
-			local humanoid = player.character:FindFirstChild("Humanoid")
-			if not hrp or not humanoid then return false end
-
-			local lookVector = hrp.CFrame.LookVector
-			local targetPos = hrp.Position - lookVector * steps
-			humanoid:MoveTo(targetPos)
-			return true
+			return Classes.Player.members.forward.impl(deps, player, -(steps or 10))
 		end),
 
 		left = method({ T.NUMBER }, T.BOOL, function(deps, player, angle)

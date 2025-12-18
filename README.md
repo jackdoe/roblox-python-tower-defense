@@ -1,7 +1,6 @@
 # [PythonTD](https://www.roblox.com/games/92507403623309/Python-Tower-Defense)
 
 > NB: 90% written by AI, nudged by jackdoe; run with rojo serve
-
 Tower defense with programmable units.
 
 ```python
@@ -11,15 +10,13 @@ while True:
         self.set_target(nearest(enemies))
         self.fire(BULLET)
 ```
-
-
 ![a](./screenshots/a.png)
 ![b](./screenshots/c.png)
 ![c](./screenshots/b.png)
 
 ## Ammo Types
 
-Gundams use ammo from their magazine. Players spend scrap per shot.
+Gundams use ammo from their magazine. Player weapons are FREE!
 
 ### Gundam Weapons
 
@@ -33,13 +30,13 @@ Gundams use ammo from their magazine. Players spend scrap per shot.
 
 ### Player Weapons
 
-| Name    | Dmg | Scrap | Rate |
-|---------|-----|-------|------|
-| BULLET  | 15  | 2     | 0.3s |
-| ROCKET  | 40  | 8     | 1.0s |
-| LASER   | 25  | 4     | 0.5s |
-| ICE     | 10  | 4     | 0.4s |
-| GRENADE | 60  | 10    | 1.5s |
+| Name    | Dmg | Rate |
+|---------|-----|------|
+| BULLET  | 15  | 0.3s |
+| ROCKET  | 40  | 1.0s |
+| LASER   | 25  | 0.5s |
+| ICE     | 10  | 0.4s |
+| GRENADE | 60  | 1.5s |
 
 Player ROCKET applies OILED. Both ICE weapons freeze (60% slow).
 
@@ -147,7 +144,7 @@ if G1.ammo < 50 and self.carrying > 0:
 |-----------------|---------|-------------|
 | `self.collect()` | bool | Finds nearest scrap cluster and moves to collect it. |
 | `self.deposit()` | bool | Deposits carried scrap at core. Must be within 15 units. |
-| `self.shock(enemy)` | bool | Teleports to enemy and zaps for 30 base damage. Triggers combos! Damage scales with cargo: 30 × 1.5^cargo. **CONSUMES ALL CARGO!** |
+| `self.shock(enemy)` | bool | Teleports to enemy and zaps for 30 base damage. Triggers combos! Damage scales with cargo: 30 × 1.5^cargo. Consumes HALF cargo (rounded up). |
 | `self.teleport([x, z])` | bool | Instantly moves to position. [0,0] is the core. |
 | `self.explode()` | bool | Sacrifices 10+ cargo for massive AOE. Bot is destroyed. |
 | `self.forward(n)` | bool | Walks forward n units in facing direction. |
@@ -159,6 +156,7 @@ if G1.ammo < 50 and self.carrying > 0:
 | `self.carrying` | number | How much scrap bot is carrying. |
 | `self.max_capacity` | number | Maximum scrap bot can carry (10). |
 | `self.pos` | [x, z] | Current position relative to core. |
+| `self.hacker` | Player | Access your owner's player. Use `self.hacker.target()` etc. |
 
 **Shock damage examples:** 5 cargo = 228 dmg, 10 cargo = 1732 dmg!
 
@@ -174,13 +172,14 @@ if G1.ammo < 50 and self.carrying > 0:
 | `self.reload(amount)` | number | Reloads ammo from scrap. Returns amount reloaded. |
 | `self.ammo` | number | Current ammo in magazine. |
 | `self.max_ammo` | number | Maximum ammo capacity (300). |
+| `self.hacker` | Player | Access your owner's player. Use `self.hacker.target()` etc. |
 | `self.pos` | [x, z] | Current position relative to core. |
 
 ## Player Abilities
 
 | Method/Property | Returns | Description |
 |-----------------|---------|-------------|
-| `self.fire(AMMO)` | bool | **[BLOCKING]** Fire at target. Costs scrap. Waits for cooldown (scales with CPU). |
+| `self.fire(AMMO)` | bool | **[BLOCKING]** Fire at target. FREE! Waits for cooldown (scales with CPU). |
 | `self.scan()` | [Enemy] | Returns enemies within range 50. |
 | `self.set_target(enemy)` | nothing | Lock aim onto an enemy. |
 | `self.collect()` | bool | Picks up scrap within range 8. |
@@ -190,6 +189,7 @@ if G1.ammo < 50 and self.carrying > 0:
 | `self.explode()` | bool | AOE attack that consumes carried scrap. |
 | `self.carrying` | number | How much scrap player is carrying. |
 | `self.max_capacity` | number | Maximum scrap player can carry (10). |
+| `self.hacker` | Player | Returns yourself. Try `self.hacker.hacker.hacker.target()`! |
 | `self.pos` | [x, z] | Current position relative to core. |
 
 ## Selectors

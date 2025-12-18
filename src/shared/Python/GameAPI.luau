@@ -47,6 +47,7 @@ local function makeDeps(registries)
 		PlayerCombat = registries.PlayerCombat,
 		GundamStats = registries.GundamStats,
 		GundamModel = registries.GundamModel,
+		Interpreters = registries.Interpreters,
 	}
 
 	function deps.getCoreOffset()

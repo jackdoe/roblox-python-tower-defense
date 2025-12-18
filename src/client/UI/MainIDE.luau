@@ -96,7 +96,8 @@ function MainIDE.create(parent, callbacks)
 
 	local botBuildBtn = Instance.new("TextButton")
 	botBuildBtn.Name = "BotBuildBtn"
-	botBuildBtn.Size = UDim2.new(0, 130, 0, 20)
+	botBuildBtn.Size = UDim2.new(0, 0, 0, 20)
+	botBuildBtn.AutomaticSize = Enum.AutomaticSize.X
 	botBuildBtn.BackgroundColor3 = Color3.fromHex("#333333")
 	botBuildBtn.Text = "+ROBOT (B): 75"
 	botBuildBtn.TextColor3 = Color3.fromRGB(215, 135, 70)
@@ -104,10 +105,15 @@ function MainIDE.create(parent, callbacks)
 	botBuildBtn.TextSize = BASE_TEXT_SIZE
 	botBuildBtn.Parent = topBar
 	Instance.new("UICorner", botBuildBtn).CornerRadius = UDim.new(0, 4)
+	local botBtnPad = Instance.new("UIPadding")
+	botBtnPad.PaddingLeft = UDim.new(0, 8)
+	botBtnPad.PaddingRight = UDim.new(0, 8)
+	botBtnPad.Parent = botBuildBtn
 
 	local gundamBuildBtn = Instance.new("TextButton")
 	gundamBuildBtn.Name = "GundamBuildBtn"
-	gundamBuildBtn.Size = UDim2.new(0, 130, 0, 20)
+	gundamBuildBtn.Size = UDim2.new(0, 0, 0, 20)
+	gundamBuildBtn.AutomaticSize = Enum.AutomaticSize.X
 	gundamBuildBtn.BackgroundColor3 = Color3.fromHex("#333333")
 	gundamBuildBtn.Text = "+GUNDAM (G): 100"
 	gundamBuildBtn.TextColor3 = Color3.fromRGB(0, 255, 255)
@@ -115,10 +121,15 @@ function MainIDE.create(parent, callbacks)
 	gundamBuildBtn.TextSize = BASE_TEXT_SIZE
 	gundamBuildBtn.Parent = topBar
 	Instance.new("UICorner", gundamBuildBtn).CornerRadius = UDim.new(0, 4)
+	local gundamBtnPad = Instance.new("UIPadding")
+	gundamBtnPad.PaddingLeft = UDim.new(0, 8)
+	gundamBtnPad.PaddingRight = UDim.new(0, 8)
+	gundamBtnPad.Parent = gundamBuildBtn
 
 	local helpBtn = Instance.new("TextButton")
 	helpBtn.Name = "HelpBtn"
-	helpBtn.Size = UDim2.new(0, 50, 0, 20)
+	helpBtn.Size = UDim2.new(0, 0, 0, 20)
+	helpBtn.AutomaticSize = Enum.AutomaticSize.X
 	helpBtn.BackgroundColor3 = Color3.fromRGB(255, 191, 0)
 	helpBtn.Text = "HELP"
 	helpBtn.TextColor3 = Color3.fromRGB(12, 12, 8)
@@ -126,10 +137,15 @@ function MainIDE.create(parent, callbacks)
 	helpBtn.TextSize = BASE_TEXT_SIZE
 	helpBtn.Parent = topBar
 	Instance.new("UICorner", helpBtn).CornerRadius = UDim.new(0, 4)
+	local helpBtnPad = Instance.new("UIPadding")
+	helpBtnPad.PaddingLeft = UDim.new(0, 8)
+	helpBtnPad.PaddingRight = UDim.new(0, 8)
+	helpBtnPad.Parent = helpBtn
 
 	local hideBtn = Instance.new("TextButton")
 	hideBtn.Name = "HideBtn"
-	hideBtn.Size = UDim2.new(0, 50, 0, 20)
+	hideBtn.Size = UDim2.new(0, 0, 0, 20)
+	hideBtn.AutomaticSize = Enum.AutomaticSize.X
 	hideBtn.BackgroundColor3 = Color3.fromHex("#333333")
 	hideBtn.Text = "HIDE"
 	hideBtn.TextColor3 = COLORS.subtext
@@ -137,8 +153,12 @@ function MainIDE.create(parent, callbacks)
 	hideBtn.TextSize = BASE_TEXT_SIZE
 	hideBtn.Parent = topBar
 	Instance.new("UICorner", hideBtn).CornerRadius = UDim.new(0, 4)
+	local hideBtnPad = Instance.new("UIPadding")
+	hideBtnPad.PaddingLeft = UDim.new(0, 8)
+	hideBtnPad.PaddingRight = UDim.new(0, 8)
+	hideBtnPad.Parent = hideBtn
 
-	local fontScale = 1
+	local fontScale = 1.3
 	local BASE_FONT_SIZES = {}
 	local textElements = {}
 	local editorRef = nil
@@ -169,6 +189,11 @@ function MainIDE.create(parent, callbacks)
 				end
 			end
 		end
+		if topBarButtons then
+			for _, btn in ipairs(topBarButtons) do
+				btn.Size = UDim2.new(0, 0, 0, math.floor(BASE_TOPBAR_HEIGHT * fontScale))
+			end
+		end
 	end
 
 	local function scaledSize(baseSize)
@@ -177,7 +202,8 @@ function MainIDE.create(parent, callbacks)
 
 	local fontDownBtn = Instance.new("TextButton")
 	fontDownBtn.Name = "FontDownBtn"
-	fontDownBtn.Size = UDim2.new(0, 28, 0, 20)
+	fontDownBtn.Size = UDim2.new(0, 0, 0, 20)
+	fontDownBtn.AutomaticSize = Enum.AutomaticSize.X
 	fontDownBtn.BackgroundColor3 = Color3.fromHex("#333333")
 	fontDownBtn.Text = "A-"
 	fontDownBtn.TextColor3 = COLORS.text
@@ -185,10 +211,15 @@ function MainIDE.create(parent, callbacks)
 	fontDownBtn.TextSize = BASE_TEXT_SIZE
 	fontDownBtn.Parent = topBar
 	Instance.new("UICorner", fontDownBtn).CornerRadius = UDim.new(0, 4)
+	local fontDownPad = Instance.new("UIPadding")
+	fontDownPad.PaddingLeft = UDim.new(0, 6)
+	fontDownPad.PaddingRight = UDim.new(0, 6)
+	fontDownPad.Parent = fontDownBtn
 
 	local fontUpBtn = Instance.new("TextButton")
 	fontUpBtn.Name = "FontUpBtn"
-	fontUpBtn.Size = UDim2.new(0, 28, 0, 20)
+	fontUpBtn.Size = UDim2.new(0, 0, 0, 20)
+	fontUpBtn.AutomaticSize = Enum.AutomaticSize.X
 	fontUpBtn.BackgroundColor3 = Color3.fromHex("#333333")
 	fontUpBtn.Text = "A+"
 	fontUpBtn.TextColor3 = COLORS.text
@@ -196,6 +227,13 @@ function MainIDE.create(parent, callbacks)
 	fontUpBtn.TextSize = BASE_TEXT_SIZE
 	fontUpBtn.Parent = topBar
 	Instance.new("UICorner", fontUpBtn).CornerRadius = UDim.new(0, 4)
+	local fontUpPad = Instance.new("UIPadding")
+	fontUpPad.PaddingLeft = UDim.new(0, 6)
+	fontUpPad.PaddingRight = UDim.new(0, 6)
+	fontUpPad.Parent = fontUpBtn
+
+	local topBarButtons = { botBuildBtn, gundamBuildBtn, helpBtn, hideBtn, fontDownBtn, fontUpBtn }
+	local BASE_TOPBAR_HEIGHT = 20
 
 	fontDownBtn.MouseButton1Click:Connect(function()
 		fontScale = math.max(0.6, fontScale - 0.1)
@@ -823,8 +861,18 @@ function MainIDE.create(parent, callbacks)
 		btn.Font = Enum.Font.RobotoMono
 		btn.TextSize = math.floor(BASE_TEXT_SIZE * fontScale)
 		btn.TextXAlignment = Enum.TextXAlignment.Left
+		btn.ClipsDescendants = true
 		btn.Parent = tabsScroll
 		registerText(btn, BASE_TEXT_SIZE)
+
+		local indicator = Instance.new("Frame")
+		indicator.Name = "SelectIndicator"
+		indicator.Size = UDim2.new(1, 0, 0, 2)
+		indicator.Position = UDim2.new(0, 0, 1, -2)
+		indicator.BackgroundColor3 = Color3.fromRGB(0, 200, 255)
+		indicator.BorderSizePixel = 0
+		indicator.Visible = false
+		indicator.Parent = btn
 
 		if not isPlayer then
 			local close = Instance.new("TextButton")
@@ -844,7 +892,7 @@ function MainIDE.create(parent, callbacks)
 
 		btn.MouseButton1Click:Connect(function() ide:openTab(pid) end)
 
-		tabs[pid] = { button = btn }
+		tabs[pid] = { button = btn, indicator = indicator }
 	end
 
 	function ide:openTab(pid)
@@ -852,11 +900,13 @@ function MainIDE.create(parent, callbacks)
 
 		for id, tab in pairs(tabs) do
 			if id == pid then
-				tab.button.BackgroundColor3 = Color3.fromHex("#1e1e1e")
-				tab.button.TextColor3 = COLORS.text
+				tab.button.BackgroundColor3 = Color3.fromHex("#1a1a1a")
+				tab.button.TextColor3 = Color3.fromRGB(0, 220, 255)
+				if tab.indicator then tab.indicator.Visible = true end
 			else
 				tab.button.BackgroundColor3 = Color3.fromHex("#2d2d2d")
 				tab.button.TextColor3 = COLORS.subtext
+				if tab.indicator then tab.indicator.Visible = false end
 			end
 		end
 
@@ -1018,12 +1068,12 @@ function MainIDE.create(parent, callbacks)
 
 	function ide:getText() return editor:getText() end
 
-	runBtn.MouseButton1Click:Connect(function()
-		if not currentTabId then return end
+	function ide:triggerRun()
+		if not currentTabId then return false end
 		local data = interpreters[currentTabId]
-		if not data then return end
+		if not data then return false end
 
-		if isEditing(data) and not data.compileOk then return end
+		if isEditing(data) and not data.compileOk then return false end
 
 		data.originalSource = data.localSource
 		data.compileOk = true
@@ -1033,6 +1083,11 @@ function MainIDE.create(parent, callbacks)
 		editor:setErrorLine(-1)
 
 		if callbacks.onRun then callbacks.onRun(currentTabId) end
+		return true
+	end
+
+	runBtn.MouseButton1Click:Connect(function()
+		ide:triggerRun()
 	end)
 
 	gdbBtn.MouseButton1Click:Connect(function()
@@ -1169,6 +1224,7 @@ function MainIDE.create(parent, callbacks)
 	end
 	scanForText(container)
 	scanForText(topBar)
+	applyFontScale()
 
 	return ide
 end

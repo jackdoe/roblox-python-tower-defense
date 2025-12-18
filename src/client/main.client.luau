@@ -466,23 +466,43 @@ RunService.RenderStepped:Connect(function(dt)
 	end
 end)
 
-local botAnimStates = {}
-RunService.RenderStepped:Connect(function(dt)
-	for _, obj in ipairs(workspace:GetDescendants()) do
+local activeBots = {}
+
+local function registerBot(obj)
+	if obj:IsA("Model") then
 		local botId = obj:GetAttribute("BotId")
-		if not botId or not obj:IsA("Model") then continue end
-		local hrp = obj:FindFirstChild("HumanoidRootPart") or obj.PrimaryPart
-		if not hrp then continue end
-		if not botAnimStates[botId] then
-			botAnimStates[botId] = { animSpeed = 0, walkCycle = 0, lastX = hrp.Position.X, lastZ = hrp.Position.Z, facingAngle = 0 }
+		if botId then
+			local hrp = obj:FindFirstChild("HumanoidRootPart") or obj.PrimaryPart
+			if hrp then
+				activeBots[obj] = {
+					botId = botId,
+					hrp = hrp,
+					animState = { animSpeed = 0, walkCycle = 0, lastX = hrp.Position.X, lastZ = hrp.Position.Z, facingAngle = 0 }
+				}
+			end
 		end
-		local animState = botAnimStates[botId]
-		local baseY = obj:GetAttribute("BaseY") or 2.5
+	end
+end
+
+workspace.DescendantAdded:Connect(registerBot)
+workspace.DescendantRemoving:Connect(function(obj) activeBots[obj] = nil end)
+for _, obj in ipairs(workspace:GetDescendants()) do registerBot(obj) end
+
+RunService.RenderStepped:Connect(function(dt)
+	for model, data in pairs(activeBots) do
+		if not model.Parent then
+			activeBots[model] = nil
+			continue
+		end
+
+		local hrp = data.hrp
+		local animState = data.animState
+		local baseY = model:GetAttribute("BaseY") or 2.5
 
 		local dx = hrp.Position.X - animState.lastX
 		local dz = hrp.Position.Z - animState.lastZ
-		local dist = math.sqrt(dx * dx + dz * dz)
-		local isMoving = dist > 0.01
+		local distSq = dx * dx + dz * dz
+		local isMoving = distSq > 0.0001
 
 		if isMoving then
 			animState.facingAngle = math.atan2(-dx, -dz)
@@ -497,9 +517,12 @@ RunService.RenderStepped:Connect(function(dt)
 		local bounce = math.abs(math.sin(animState.walkCycle)) * 0.25
 		local tilt = math.sin(animState.walkCycle * 0.5) * 0.12
 		local lean = isMoving and -0.08 or 0
-		hrp.CFrame = CFrame.new(hrp.Position.X, baseY + bounce, hrp.Position.Z)
-			* CFrame.Angles(0, animState.facingAngle, 0)
-			* CFrame.Angles(lean, 0, -tilt)
+
+		if animState.animSpeed > 0.1 or math.abs(bounce) > 0.01 then
+			hrp.CFrame = CFrame.new(hrp.Position.X, baseY + bounce, hrp.Position.Z)
+				* CFrame.Angles(0, animState.facingAngle, 0)
+				* CFrame.Angles(lean, 0, -tilt)
+		end
 	end
 end)
 
@@ -529,6 +552,13 @@ mouse.Button1Down:Connect(function()
 end)
 
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
+	local ctrlHeld = UserInputService:IsKeyDown(Enum.KeyCode.LeftControl) or UserInputService:IsKeyDown(Enum.KeyCode.RightControl)
+
+	if ctrlHeld and input.KeyCode == Enum.KeyCode.One then
+		ide:triggerRun()
+		return
+	end
+
 	if gameProcessed then return end
 
 	if input.KeyCode == Enum.KeyCode.G then

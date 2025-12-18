@@ -197,10 +197,10 @@ function EditorPanel.create(parent, selfType)
 		local btn = Instance.new("TextButton")
 		btn.Name = "Help" .. i
 		btn.Size = UDim2.new(0, 60, 0, 16)
-		btn.BackgroundColor3 = COLORS.bg
-		btn.BackgroundTransparency = 0.5
+		btn.BackgroundColor3 = Color3.fromRGB(0, 80, 100)
+		btn.BackgroundTransparency = 0
 		btn.Text = ""
-		btn.TextColor3 = COLORS.accent
+		btn.TextColor3 = Color3.fromRGB(255, 255, 255)
 		btn.Font = Enum.Font.Code
 		btn.TextSize = 10
 		btn.AutomaticSize = Enum.AutomaticSize.X
@@ -214,8 +214,8 @@ function EditorPanel.create(parent, selfType)
 		btnCorner.Parent = btn
 
 		local btnPadding = Instance.new("UIPadding")
-		btnPadding.PaddingLeft = UDim.new(0, 4)
-		btnPadding.PaddingRight = UDim.new(0, 4)
+		btnPadding.PaddingLeft = UDim.new(0, 6)
+		btnPadding.PaddingRight = UDim.new(0, 6)
 		btnPadding.Parent = btn
 
 		helpButtons[i] = btn
@@ -223,8 +223,33 @@ function EditorPanel.create(parent, selfType)
 	end
 
 	local function getContext(text)
-		local obj, attr = text:match("([%w_]+)%.([%w_]*)$")
-		if obj then
+		local chain = text:match("([%w_%.]+)%.([%w_]*)$")
+		if chain then
+			local parts = {}
+			for part in chain:gmatch("[%w_]+") do
+				table.insert(parts, part)
+			end
+			local attr = text:match("%.([%w_]*)$") or ""
+
+			if #parts >= 2 then
+				local base = parts[1]
+				local prop = parts[2]
+				local baseType = nil
+
+				if base == "self" then
+					baseType = currentSelfType
+				elseif base:match("^B%d$") then
+					baseType = "Bot"
+				elseif base:match("^G%d+$") then
+					baseType = "Gundam"
+				end
+
+				if baseType and prop == "hacker" then
+					return "Player", attr:lower()
+				end
+			end
+
+			local obj = parts[1]
 			if obj == "self" then
 				return "self", attr:lower()
 			elseif obj:match("^B%d$") then

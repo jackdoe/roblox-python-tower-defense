@@ -10,6 +10,7 @@ local GundamModel = require(script.Parent.GundamModel)
 local BotModel = require(script.Parent.BotModel)
 local GundamStats = require(script.Parent.GundamStats)
 local BotStats = require(script.Parent.BotStats)
+local Config = require(PythonTD.Config)
 
 local Interpreters = {}
 
@@ -697,12 +698,24 @@ local function executeBotTask(data, dt)
 		if dist <= 2 then
 			entity.status = "IDLE"
 			entity.isMoving = false
+			entity.moveTargetX = nil
+			entity.moveTargetZ = nil
 			task.result = true
 			return "DONE"
 		end
 
-		entity.moveTargetX = targetX
-		entity.moveTargetZ = targetZ
+		local cpuHz = data.interpreter and data.interpreter.cpuHz or 1
+		local speed = BotStats.BASE.speed + (cpuHz - 1) * 4
+		local dirX = dx / dist
+		local dirZ = dz / dist
+		local moveAmount = math.min(speed * dt, dist)
+		local newX = hrp.Position.X + dirX * moveAmount
+		local newZ = hrp.Position.Z + dirZ * moveAmount
+		local facingAngle = math.atan2(-dirX, -dirZ)
+
+		entity.facingAngle = facingAngle
+		hrp.CFrame = CFrame.new(newX, GROUND_Y + 3, newZ) * CFrame.Angles(0, facingAngle, 0)
+
 		entity.isMoving = true
 		entity.status = "MOVING"
 		return "RUNNING"
@@ -727,9 +740,10 @@ local function executeBotTask(data, dt)
 			end
 
 			local botScrap = entity.scrapInventory or 0
+			local scrapUsed = math.ceil(botScrap / 2)
 			local unitPower = data.interpreter and data.interpreter.power or 1
-			EnemyManager.shock(enemyId, BotStats.SHOCK_DAMAGE, hrp.Position.X, hrp.Position.Z, botScrap, unitPower)
-			entity.scrapInventory = 0
+			EnemyManager.shock(enemyId, BotStats.SHOCK_DAMAGE, hrp.Position.X, hrp.Position.Z, scrapUsed, unitPower)
+			entity.scrapInventory = botScrap - scrapUsed
 			task.shockExecuted = true
 			task.stunEndTime = tick() + BotStats.SHOCK_STUN_TIME
 

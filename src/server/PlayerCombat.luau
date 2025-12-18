@@ -78,16 +78,6 @@ function PlayerCombat.fire(interp, enemy, ammoType)
 	local cpuHz = interp.cpuHz or 1
 	local adjustedFireRate = stats.fireRate / cpuHz
 
-	local scrapCost = stats.scrapCost or 2
-	if WaveManager then
-		local playerId = interp.playerId or 0
-		local currentScrap = WaveManager.getScrap(playerId)
-		if currentScrap < scrapCost then
-			return false
-		end
-		WaveManager.removeScrap(playerId, scrapCost)
-	end
-
 	-- Check distance (max range 50)
 	local dist = (enemyHrp.Position - hrp.Position).Magnitude
 	if dist > 50 then return false end
