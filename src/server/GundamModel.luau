@@ -570,13 +570,6 @@ function GundamModel.updateBillboard(gundam)
 	local idLabel = bg:FindFirstChild("IdLabel")
 	if idLabel then
 		idLabel.Text = gundam.name or "G_?.py"
-		if upgradeLevel >= 3 then
-			idLabel.TextColor3 = Color3.fromRGB(255, 150, 220)
-		elseif upgradeLevel >= 2 then
-			idLabel.TextColor3 = Color3.fromRGB(100, 200, 255)
-		else
-			idLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-		end
 	end
 
 	local statusLabel = bg:FindFirstChild("StatusLabel")

@@ -25,9 +25,6 @@ local selectionRing = nil
 local selectionRingTarget = nil
 local selectionRingModel = nil
 local selectedBillboardModel = nil
-local selectedBillboardStroke = nil
-local selectedBillboardGlow = nil
-local billboardAnimTime = 0
 
 local function setBillboardSelected(model, selected)
 	if not model then return end
@@ -42,33 +39,13 @@ local function setBillboardSelected(model, selected)
 
 	if selected then
 		stroke.Thickness = 3
-		stroke.Color = Color3.fromRGB(255, 255, 255)
-		selectedBillboardStroke = stroke
-
-		local existingGlow = bg:FindFirstChild("SelectionGlow")
-		if existingGlow then existingGlow:Destroy() end
-
-		local glow = Instance.new("UIStroke")
-		glow.Name = "SelectionGlow"
-		glow.Thickness = 6
-		glow.Color = Color3.fromRGB(100, 200, 255)
-		glow.Transparency = 0.5
-		glow.Parent = bg
-		selectedBillboardGlow = glow
+		stroke.Color = Color3.fromRGB(255, 0, 0)
 	else
 		local r = model:GetAttribute("OwnerColorR") or 0
 		local g = model:GetAttribute("OwnerColorG") or 1
 		local b = model:GetAttribute("OwnerColorB") or 1
 		stroke.Thickness = 2
 		stroke.Color = Color3.new(r, g, b)
-
-		local existingGlow = bg:FindFirstChild("SelectionGlow")
-		if existingGlow then existingGlow:Destroy() end
-
-		if selectedBillboardStroke == stroke then
-			selectedBillboardStroke = nil
-			selectedBillboardGlow = nil
-		end
 	end
 end
 
@@ -90,11 +67,11 @@ local function createSelectionRing(size)
 	ring.Shape = Enum.PartType.Cylinder
 	ring.Size = Vector3.new(0.03, size * 2, size * 2)
 	ring.Material = Enum.Material.SmoothPlastic
-	ring.Color = Color3.fromRGB(80, 140, 180)
+	ring.Color = Color3.fromRGB(255, 0, 0)
 	ring.Anchored = true
 	ring.CanCollide = false
 	ring.CastShadow = false
-	ring.Transparency = 0.7
+	ring.Transparency = 0.85
 	ring.CFrame = CFrame.new(0, -1000, 0) * CFrame.Angles(0, 0, math.rad(90))
 	ring.Parent = workspace
 	selectionRing = ring
@@ -127,7 +104,8 @@ local function updateSelectionRing()
 		if char then
 			local hrp = char:FindFirstChild("HumanoidRootPart")
 			if hrp then
-				selectionRing.CFrame = CFrame.new(hrp.Position.X, Config.PLATFORM_Y + 0.5, hrp.Position.Z) * CFrame.Angles(0, 0, math.rad(90))
+				selectionRing.CFrame = CFrame.new(hrp.Position.X, Config.PLATFORM_Y + 0.5, hrp.Position.Z) *
+					CFrame.Angles(0, 0, math.rad(90))
 			end
 		end
 		return
@@ -136,7 +114,8 @@ local function updateSelectionRing()
 	if selectionRingModel and selectionRingModel.Parent then
 		local hrp = selectionRingModel:FindFirstChild("HumanoidRootPart") or selectionRingModel.PrimaryPart
 		if hrp then
-			selectionRing.CFrame = CFrame.new(hrp.Position.X, Config.PLATFORM_Y + 0.5, hrp.Position.Z) * CFrame.Angles(0, 0, math.rad(90))
+			selectionRing.CFrame = CFrame.new(hrp.Position.X, Config.PLATFORM_Y + 0.5, hrp.Position.Z) *
+				CFrame.Angles(0, 0, math.rad(90))
 		end
 		return
 	end
@@ -149,7 +128,8 @@ local function updateSelectionRing()
 		selectionRingModel = obj
 		local hrp = obj:FindFirstChild("HumanoidRootPart") or obj.PrimaryPart
 		if hrp then
-			selectionRing.CFrame = CFrame.new(hrp.Position.X, Config.PLATFORM_Y + 0.5, hrp.Position.Z) * CFrame.Angles(0, 0, math.rad(90))
+			selectionRing.CFrame = CFrame.new(hrp.Position.X, Config.PLATFORM_Y + 0.5, hrp.Position.Z) *
+				CFrame.Angles(0, 0, math.rad(90))
 		end
 		return
 	end
@@ -535,20 +515,6 @@ local mouse = player:GetMouse()
 RunService.RenderStepped:Connect(function(dt)
 	updateSelectionRing()
 
-	billboardAnimTime = billboardAnimTime + dt * 4
-	if selectedBillboardGlow then
-		local pulse = (math.sin(billboardAnimTime) + 1) / 2
-		selectedBillboardGlow.Transparency = 0.3 + pulse * 0.5
-		selectedBillboardGlow.Thickness = 4 + pulse * 4
-	end
-	if selectedBillboardStroke then
-		local pulse = (math.sin(billboardAnimTime * 1.5) + 1) / 2
-		local r = 0.4 + pulse * 0.6
-		local g = 0.8 + pulse * 0.2
-		local b = 1
-		selectedBillboardStroke.Color = Color3.new(r, g, b)
-	end
-
 	local mouseTarget = mouse.Hit
 	if not mouseTarget then return end
 
@@ -670,7 +636,8 @@ mouse.Button1Down:Connect(function()
 end)
 
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
-	local ctrlHeld = UserInputService:IsKeyDown(Enum.KeyCode.LeftControl) or UserInputService:IsKeyDown(Enum.KeyCode.RightControl)
+	local ctrlHeld = UserInputService:IsKeyDown(Enum.KeyCode.LeftControl) or
+		UserInputService:IsKeyDown(Enum.KeyCode.RightControl)
 
 	if ctrlHeld and input.KeyCode == Enum.KeyCode.One then
 		ide:triggerRun()

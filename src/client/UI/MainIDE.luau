@@ -545,7 +545,7 @@ function MainIDE.create(parent, callbacks)
 	powerBtn.Size = UDim2.new(0, 0, 0, 18)
 	powerBtn.AutomaticSize = Enum.AutomaticSize.X
 	powerBtn.BackgroundColor3 = Color3.fromHex("#333333")
-	powerBtn.Text = "+PWR x2:100S"
+	powerBtn.Text = "+PWR x2:200S"
 	powerBtn.TextColor3 = Color3.fromRGB(255, 100, 100)
 	powerBtn.Font = Enum.Font.RobotoMono
 	powerBtn.TextSize = BASE_TEXT_SIZE
@@ -562,7 +562,7 @@ function MainIDE.create(parent, callbacks)
 	buyCpuBtn.Size = UDim2.new(0, 0, 0, 18)
 	buyCpuBtn.AutomaticSize = Enum.AutomaticSize.X
 	buyCpuBtn.BackgroundColor3 = Color3.fromHex("#333333")
-	buyCpuBtn.Text = "+CPU:100S"
+	buyCpuBtn.Text = "+CPU:200S"
 	buyCpuBtn.TextColor3 = COLORS.success
 	buyCpuBtn.Font = Enum.Font.RobotoMono
 	buyCpuBtn.TextSize = BASE_TEXT_SIZE
