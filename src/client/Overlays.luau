@@ -1,4 +1,5 @@
 local TweenService = game:GetService("TweenService")
+local UITheme = require(script.Parent.UI.UITheme)
 
 local Overlays = {}
 
@@ -23,7 +24,7 @@ function Overlays.create(screenGui)
 	gameOverLabel.BackgroundTransparency = 1
 	gameOverLabel.Text = "CORE DESTROYED"
 	gameOverLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
-	gameOverLabel.Font = Enum.Font.GothamBold
+	gameOverLabel.Font = UITheme.FONT
 	gameOverLabel.TextSize = 36
 	gameOverLabel.Parent = gameOverOverlay
 
@@ -33,7 +34,7 @@ function Overlays.create(screenGui)
 	restartCountdownLabel.BackgroundTransparency = 1
 	restartCountdownLabel.Text = "Restarting in 10..."
 	restartCountdownLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
-	restartCountdownLabel.Font = Enum.Font.Gotham
+	restartCountdownLabel.Font = UITheme.FONT
 	restartCountdownLabel.TextSize = 20
 	restartCountdownLabel.Parent = gameOverOverlay
 
@@ -53,7 +54,7 @@ function Overlays.create(screenGui)
 	victoryLabel.BackgroundTransparency = 1
 	victoryLabel.Text = "VICTORY!"
 	victoryLabel.TextColor3 = Color3.fromRGB(100, 255, 150)
-	victoryLabel.Font = Enum.Font.GothamBold
+	victoryLabel.Font = UITheme.FONT
 	victoryLabel.TextSize = 48
 	victoryLabel.Parent = victoryOverlay
 
@@ -83,7 +84,7 @@ function Overlays.create(screenGui)
 	notificationTitle.BackgroundTransparency = 1
 	notificationTitle.Text = "NEW WORD UNLOCKED!"
 	notificationTitle.TextColor3 = Color3.fromRGB(255, 220, 100)
-	notificationTitle.Font = Enum.Font.GothamBold
+	notificationTitle.Font = UITheme.FONT
 	notificationTitle.TextSize = 18
 	notificationTitle.ZIndex = 201
 	notificationTitle.Parent = notificationFrame
@@ -94,7 +95,7 @@ function Overlays.create(screenGui)
 	notificationWord.BackgroundTransparency = 1
 	notificationWord.Text = ""
 	notificationWord.TextColor3 = Color3.fromRGB(100, 255, 100)
-	notificationWord.Font = Enum.Font.Code
+	notificationWord.Font = UITheme.FONT
 	notificationWord.TextSize = 28
 	notificationWord.ZIndex = 201
 	notificationWord.Parent = notificationFrame
@@ -105,7 +106,7 @@ function Overlays.create(screenGui)
 	notificationHint.BackgroundTransparency = 1
 	notificationHint.Text = ""
 	notificationHint.TextColor3 = Color3.fromRGB(180, 180, 180)
-	notificationHint.Font = Enum.Font.Gotham
+	notificationHint.Font = UITheme.FONT
 	notificationHint.TextSize = 12
 	notificationHint.ZIndex = 201
 	notificationHint.Parent = notificationFrame

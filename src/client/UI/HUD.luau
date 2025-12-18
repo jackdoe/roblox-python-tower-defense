@@ -34,7 +34,7 @@ function HUD.create(parent, callbacks)
 	coreLabel.BackgroundTransparency = 1
 	coreLabel.Text = "CORE HP"
 	coreLabel.TextColor3 = COLORS.subtext
-	coreLabel.Font = Enum.Font.GothamBold
+	coreLabel.Font = UITheme.FONT
 	coreLabel.TextSize = 10
 	coreLabel.TextXAlignment = Enum.TextXAlignment.Left
 	coreLabel.Parent = coreDisplay
@@ -46,7 +46,7 @@ function HUD.create(parent, callbacks)
 	coreHP.BackgroundTransparency = 1
 	coreHP.Text = "1000 / 1000"
 	coreHP.TextColor3 = COLORS.success
-	coreHP.Font = Enum.Font.GothamBlack
+	coreHP.Font = UITheme.FONT
 	coreHP.TextSize = 16
 	coreHP.TextXAlignment = Enum.TextXAlignment.Left
 	coreHP.Parent = coreDisplay
@@ -69,7 +69,7 @@ function HUD.create(parent, callbacks)
 	scrapText.BackgroundTransparency = 1
 	scrapText.Text = "SCRAP: 0"
 	scrapText.TextColor3 = COLORS.warning
-	scrapText.Font = Enum.Font.GothamBold
+	scrapText.Font = UITheme.FONT
 	scrapText.TextSize = 14
 	scrapText.TextXAlignment = Enum.TextXAlignment.Left
 	scrapText.Parent = scrapDisplay
@@ -92,7 +92,7 @@ function HUD.create(parent, callbacks)
 	waveTitle.BackgroundTransparency = 1
 	waveTitle.Text = "WAVE 1"
 	waveTitle.TextColor3 = COLORS.accent
-	waveTitle.Font = Enum.Font.GothamBold
+	waveTitle.Font = UITheme.FONT
 	waveTitle.TextSize = 14
 	waveTitle.TextXAlignment = Enum.TextXAlignment.Left
 	waveTitle.Parent = waveDisplay
@@ -104,7 +104,7 @@ function HUD.create(parent, callbacks)
 	enemyCount.BackgroundTransparency = 1
 	enemyCount.Text = "0 / 0"
 	enemyCount.TextColor3 = COLORS.danger
-	enemyCount.Font = Enum.Font.Gotham
+	enemyCount.Font = UITheme.FONT
 	enemyCount.TextSize = 12
 	enemyCount.TextXAlignment = Enum.TextXAlignment.Left
 	enemyCount.Parent = waveDisplay
@@ -116,7 +116,7 @@ function HUD.create(parent, callbacks)
 	waveActionBtn.BackgroundColor3 = COLORS.accent
 	waveActionBtn.Text = "START"
 	waveActionBtn.TextColor3 = COLORS.bg
-	waveActionBtn.Font = Enum.Font.GothamBold
+	waveActionBtn.Font = UITheme.FONT
 	waveActionBtn.TextSize = 14
 	waveActionBtn.AutoButtonColor = true
 	waveActionBtn.Parent = parent
@@ -143,7 +143,7 @@ function HUD.create(parent, callbacks)
 	scoreboardTitle.BackgroundTransparency = 1
 	scoreboardTitle.Text = "// DMG_LOG"
 	scoreboardTitle.TextColor3 = Color3.fromRGB(255, 176, 0)
-	scoreboardTitle.Font = Enum.Font.Code
+	scoreboardTitle.Font = UITheme.FONT
 	scoreboardTitle.TextSize = SCOREBOARD_TITLE_SIZE
 	scoreboardTitle.TextXAlignment = Enum.TextXAlignment.Left
 	scoreboardTitle.Parent = scoreboardFrame
@@ -261,7 +261,7 @@ function HUD.create(parent, callbacks)
 			row.Name = "Row" .. i
 			row.Size = UDim2.new(1, 0, 0, rowSize + 4)
 			row.BackgroundTransparency = 1
-			row.Font = Enum.Font.Code
+			row.Font = UITheme.FONT
 			row.TextSize = rowSize
 			row.TextXAlignment = Enum.TextXAlignment.Left
 			row.LayoutOrder = i

@@ -13,6 +13,7 @@ local SoundConfig = require(PythonTD.SoundConfig)
 
 local MainIDE = require(script.Parent.UI.MainIDE)
 local HUD = require(script.Parent.UI.HUD)
+local UITheme = require(script.Parent.UI.UITheme)
 local Effects = require(script.Parent.Effects)
 local GridNavigator = require(script.Parent.GridNavigator)
 
@@ -301,7 +302,7 @@ local function createPlayerBillboard(character)
 	label.BackgroundTransparency = 1
 	label.Text = "0/5"
 	label.TextColor3 = Color3.fromRGB(255, 200, 50)
-	label.Font = Enum.Font.GothamBold
+	label.Font = UITheme.FONT
 	label.TextSize = 10
 	label.Parent = bg
 

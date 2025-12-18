@@ -47,7 +47,7 @@ function BytecodePanel.create(parent)
 	title.Text = "BYTECODE"
 	title.TextColor3 = COLORS.text
 	title.TextXAlignment = Enum.TextXAlignment.Left
-	title.Font = Enum.Font.Code
+	title.Font = UITheme.FONT
 	title.TextSize = 12
 	title.Parent = header
 
@@ -58,7 +58,7 @@ function BytecodePanel.create(parent)
 	copyBtn.BackgroundColor3 = COLORS.panel
 	copyBtn.Text = "COPY"
 	copyBtn.TextColor3 = COLORS.text
-	copyBtn.Font = Enum.Font.Code
+	copyBtn.Font = UITheme.FONT
 	copyBtn.TextSize = 10
 	copyBtn.Parent = header
 
@@ -74,7 +74,7 @@ function BytecodePanel.create(parent)
 	ipLabel.Text = "IP: 0"
 	ipLabel.TextColor3 = COLORS.accent
 	ipLabel.TextXAlignment = Enum.TextXAlignment.Right
-	ipLabel.Font = Enum.Font.Code
+	ipLabel.Font = UITheme.FONT
 	ipLabel.TextSize = 12
 	ipLabel.Parent = header
 
@@ -100,7 +100,7 @@ function BytecodePanel.create(parent)
 	bcHeader.Text = "INSTRUCTIONS"
 	bcHeader.TextColor3 = COLORS.subtext
 	bcHeader.TextXAlignment = Enum.TextXAlignment.Left
-	bcHeader.Font = Enum.Font.Code
+	bcHeader.Font = UITheme.FONT
 	bcHeader.TextSize = 10
 	bcHeader.Parent = frame
 
@@ -129,7 +129,7 @@ function BytecodePanel.create(parent)
 	bcLabel.TextColor3 = COLORS.text
 	bcLabel.TextXAlignment = Enum.TextXAlignment.Left
 	bcLabel.TextYAlignment = Enum.TextYAlignment.Top
-	bcLabel.Font = Enum.Font.Code
+	bcLabel.Font = UITheme.FONT
 	bcLabel.TextSize = 11
 	bcLabel.TextWrapped = false
 	bcLabel.AutomaticSize = Enum.AutomaticSize.Y
@@ -145,7 +145,7 @@ function BytecodePanel.create(parent)
 	stackHeader.Text = "STACK"
 	stackHeader.TextColor3 = COLORS.subtext
 	stackHeader.TextXAlignment = Enum.TextXAlignment.Left
-	stackHeader.Font = Enum.Font.Code
+	stackHeader.Font = UITheme.FONT
 	stackHeader.TextSize = 10
 	stackHeader.Parent = frame
 
@@ -172,7 +172,7 @@ function BytecodePanel.create(parent)
 	stackLabel.TextColor3 = COLORS.subtext
 	stackLabel.TextXAlignment = Enum.TextXAlignment.Left
 	stackLabel.TextYAlignment = Enum.TextYAlignment.Top
-	stackLabel.Font = Enum.Font.Code
+	stackLabel.Font = UITheme.FONT
 	stackLabel.TextSize = 11
 	stackLabel.TextWrapped = true
 	stackLabel.Parent = stackFrame

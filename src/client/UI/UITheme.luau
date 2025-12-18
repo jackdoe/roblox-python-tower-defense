@@ -1,5 +1,7 @@
 local UITheme = {}
 
+UITheme.FONT = Enum.Font.Code
+
 UITheme.COLORS = {
 	bg = Color3.fromRGB(12, 16, 22),
 	panel = Color3.fromRGB(20, 25, 35),

@@ -6,6 +6,7 @@ local Debris = game:GetService("Debris")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local SoundConfig = require(ReplicatedStorage:WaitForChild("PythonTD"):WaitForChild("SoundConfig"))
+local UITheme = require(script.Parent.UI.UITheme)
 
 local Effects = {}
 
@@ -224,7 +225,7 @@ function Effects.attackHit(data)
 		hitLabel.TextColor3 = textColor
 		hitLabel.TextStrokeTransparency = 0
 		hitLabel.TextStrokeColor3 = Color3.new(0, 0, 0)
-		hitLabel.Font = Enum.Font.GothamBlack
+		hitLabel.Font = UITheme.FONT
 		hitLabel.TextSize = textSize
 		hitLabel.TextScaled = false
 		hitLabel.Parent = billboard
@@ -441,7 +442,7 @@ function Effects.gundamUpgrade(position, tier, color)
 		text.TextColor3 = color
 		text.TextStrokeTransparency = 0
 		text.TextStrokeColor3 = Color3.new(0, 0, 0)
-		text.Font = Enum.Font.GothamBlack
+		text.Font = UITheme.FONT
 		text.TextSize = 0  -- Start at 0 for pop effect
 		text.TextScaled = false
 		text.Parent = billboard

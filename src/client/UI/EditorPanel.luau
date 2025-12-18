@@ -131,7 +131,7 @@ function EditorPanel.create(parent, selfType)
 	lineNumbers.TextColor3 = COLORS.subtext
 	lineNumbers.TextXAlignment = Enum.TextXAlignment.Right
 	lineNumbers.TextYAlignment = Enum.TextYAlignment.Top
-	lineNumbers.Font = Enum.Font.Code
+	lineNumbers.Font = UITheme.FONT
 	lineNumbers.TextSize = 13
 	lineNumbers.RichText = true
 	lineNumbers.AutomaticSize = Enum.AutomaticSize.Y
@@ -157,7 +157,7 @@ function EditorPanel.create(parent, selfType)
 	textBox.TextColor3 = COLORS.text
 	textBox.TextXAlignment = Enum.TextXAlignment.Left
 	textBox.TextYAlignment = Enum.TextYAlignment.Top
-	textBox.Font = Enum.Font.Code
+	textBox.Font = UITheme.FONT
 	textBox.TextSize = 13
 	textBox.MultiLine = true
 	textBox.ClearTextOnFocus = false
@@ -201,7 +201,7 @@ function EditorPanel.create(parent, selfType)
 		btn.BackgroundTransparency = 0
 		btn.Text = ""
 		btn.TextColor3 = Color3.fromRGB(255, 255, 255)
-		btn.Font = Enum.Font.Code
+		btn.Font = UITheme.FONT
 		btn.TextSize = 10
 		btn.AutomaticSize = Enum.AutomaticSize.X
 		btn.TextTruncate = Enum.TextTruncate.AtEnd

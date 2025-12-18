@@ -113,7 +113,7 @@ function BotModel.create(x, z, ownerColor)
 	chatText.Text = ""
 	chatText.TextColor3 = Color3.new(0.2, 0.2, 0.2)
 	chatText.TextScaled = true
-	chatText.Font = Enum.Font.GothamBold
+	chatText.Font = Enum.Font.Code
 	chatText.TextTransparency = 1
 	chatText.Parent = bubble
 
@@ -185,7 +185,7 @@ function BotModel.createBillboard(bot)
 	idLabel.BackgroundTransparency = 1
 	idLabel.Text = bot.name or "B_?.py"
 	idLabel.TextColor3 = ownerColor
-	idLabel.Font = Enum.Font.GothamBold
+	idLabel.Font = Enum.Font.Code
 	idLabel.TextSize = 11
 	idLabel.TextXAlignment = Enum.TextXAlignment.Left
 	idLabel.Parent = bg
@@ -225,7 +225,7 @@ function BotModel.createBillboard(bot)
 	statusLabel.Text = "IDLE"
 	statusLabel.TextColor3 = Color3.fromRGB(150, 150, 150)
 	statusLabel.Font = Enum.Font.Code
-	statusLabel.TextSize = 9
+	statusLabel.TextSize = 8
 	statusLabel.Parent = bg
 
 	bot.billboard = billboard

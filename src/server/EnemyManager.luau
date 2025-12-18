@@ -364,7 +364,7 @@ function EnemyManager.createHpBar(enemy)
 	nameLabel.Size = UDim2.new(1, 0, 0, 12)
 	nameLabel.Position = UDim2.new(0, 0, 0, -14)
 	nameLabel.BackgroundTransparency = 1
-	nameLabel.Font = Enum.Font.GothamBold
+	nameLabel.Font = Enum.Font.Code
 	nameLabel.TextSize = 10
 	nameLabel.TextStrokeTransparency = 0.5
 	nameLabel.Parent = billboard

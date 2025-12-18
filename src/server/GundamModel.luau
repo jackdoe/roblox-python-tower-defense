@@ -495,7 +495,7 @@ function GundamModel.createBillboard(gundam)
 	idLabel.BackgroundTransparency = 1
 	idLabel.Text = gundam.name or "G_?.py"
 	idLabel.TextColor3 = ownerColor
-	idLabel.Font = Enum.Font.GothamBold
+	idLabel.Font = Enum.Font.Code
 	idLabel.TextSize = 12
 	idLabel.TextXAlignment = Enum.TextXAlignment.Left
 	idLabel.Parent = bg

@@ -194,7 +194,7 @@ function WaveManager.createGateVisuals(gates)
 		txt.BackgroundTransparency = 1
 		txt.Text = "GATE " .. i
 		txt.TextColor3 = neonColor
-		txt.Font = Enum.Font.SciFi
+		txt.Font = Enum.Font.Code
 		txt.TextSize = 20
 		txt.Parent = bb
 

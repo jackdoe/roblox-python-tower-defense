@@ -3,6 +3,7 @@
 
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
+local UITheme = require(script.Parent.UI.UITheme)
 
 local GridNavigator = {}
 
@@ -140,7 +141,7 @@ local function createLabel(pos, text, color, isAngle)
     label.Text = text
     label.TextColor3 = color
     label.TextSize = 16
-    label.Font = Enum.Font.SciFi
+    label.Font = UITheme.FONT
     label.TextStrokeTransparency = 0
     label.TextStrokeColor3 = Color3.new(0, 0, 0)
     label.Parent = bb

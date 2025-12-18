@@ -1,3 +1,5 @@
+local UITheme = require(script.Parent.UITheme)
+
 local HelpPanel = {}
 
 local AMBER = Color3.fromRGB(255, 191, 0)
@@ -445,7 +447,7 @@ function HelpPanel.create(parent, onClose)
     content.BackgroundTransparency = 1
     content.Text = HELP_TEXT
     content.TextColor3 = AMBER
-    content.Font = Enum.Font.Code
+    content.Font = UITheme.FONT
     content.TextSize = 14
     content.TextXAlignment = Enum.TextXAlignment.Left
     content.TextYAlignment = Enum.TextYAlignment.Top
@@ -461,7 +463,7 @@ function HelpPanel.create(parent, onClose)
     closeBtn.BackgroundColor3 = AMBER_DIM
     closeBtn.Text = "CLOSE"
     closeBtn.TextColor3 = BG_COLOR
-    closeBtn.Font = Enum.Font.Code
+    closeBtn.Font = UITheme.FONT
     closeBtn.TextSize = 14
     closeBtn.ZIndex = 102
     closeBtn.Parent = frame
