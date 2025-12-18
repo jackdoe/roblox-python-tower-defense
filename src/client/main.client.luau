@@ -24,6 +24,63 @@ local HelpPanel = require(script.Parent.UI.HelpPanel)
 local selectionRing = nil
 local selectionRingTarget = nil
 local selectionRingModel = nil
+local selectedBillboardModel = nil
+local selectedBillboardStroke = nil
+local selectedBillboardGlow = nil
+local billboardAnimTime = 0
+
+local function setBillboardSelected(model, selected)
+	if not model then return end
+	local hrp = model:FindFirstChild("HumanoidRootPart") or model.PrimaryPart
+	if not hrp then return end
+	local billboard = hrp:FindFirstChild("GundamBillboard") or hrp:FindFirstChild("BotBillboard")
+	if not billboard then return end
+	local bg = billboard:FindFirstChild("Background") or billboard:FindFirstChildOfClass("Frame")
+	if not bg then return end
+	local stroke = bg:FindFirstChildOfClass("UIStroke")
+	if not stroke then return end
+
+	if selected then
+		stroke.Thickness = 3
+		stroke.Color = Color3.fromRGB(255, 255, 255)
+		selectedBillboardStroke = stroke
+
+		local existingGlow = bg:FindFirstChild("SelectionGlow")
+		if existingGlow then existingGlow:Destroy() end
+
+		local glow = Instance.new("UIStroke")
+		glow.Name = "SelectionGlow"
+		glow.Thickness = 6
+		glow.Color = Color3.fromRGB(100, 200, 255)
+		glow.Transparency = 0.5
+		glow.Parent = bg
+		selectedBillboardGlow = glow
+	else
+		local r = model:GetAttribute("OwnerColorR") or 0
+		local g = model:GetAttribute("OwnerColorG") or 1
+		local b = model:GetAttribute("OwnerColorB") or 1
+		stroke.Thickness = 2
+		stroke.Color = Color3.new(r, g, b)
+
+		local existingGlow = bg:FindFirstChild("SelectionGlow")
+		if existingGlow then existingGlow:Destroy() end
+
+		if selectedBillboardStroke == stroke then
+			selectedBillboardStroke = nil
+			selectedBillboardGlow = nil
+		end
+	end
+end
+
+local function findUnitModel(pid, unitType)
+	local attrName = unitType == "gundam" and "GundamId" or "BotId"
+	for _, obj in ipairs(workspace:GetDescendants()) do
+		if obj:IsA("Model") and obj:GetAttribute(attrName) == pid then
+			return obj
+		end
+	end
+	return nil
+end
 
 local function createSelectionRing(size)
 	if selectionRing then selectionRing:Destroy() end
@@ -154,19 +211,31 @@ ide = MainIDE.create(screenGui, {
 		gundamUpgradeEvent:FireServer(pid, "ram")
 	end,
 	onTabOpen = function(pid)
+		setBillboardSelected(selectedBillboardModel, false)
+		selectedBillboardModel = nil
+
 		local interpType = ide:getInterpreterType(pid)
 		if interpType == "gundam" then
 			local range = ide:getRange(pid)
 			createSelectionRing(range)
 			selectionRingTarget = { id = pid, type = interpType }
-		elseif interpType == "bot" or interpType == "player" then
+			selectedBillboardModel = findUnitModel(pid, "gundam")
+		elseif interpType == "bot" then
+			createSelectionRing(3)
+			selectionRingTarget = { id = pid, type = interpType }
+			selectedBillboardModel = findUnitModel(pid, "bot")
+		elseif interpType == "player" then
 			createSelectionRing(3)
 			selectionRingTarget = { id = pid, type = interpType }
 		else
 			destroySelectionRing()
 		end
+
+		setBillboardSelected(selectedBillboardModel, true)
 	end,
 	onTabClose = function(pid)
+		setBillboardSelected(selectedBillboardModel, false)
+		selectedBillboardModel = nil
 		destroySelectionRing()
 		local interpType = ide:getInterpreterType(pid)
 		if interpType == "gundam" then
@@ -466,6 +535,20 @@ local mouse = player:GetMouse()
 RunService.RenderStepped:Connect(function(dt)
 	updateSelectionRing()
 
+	billboardAnimTime = billboardAnimTime + dt * 4
+	if selectedBillboardGlow then
+		local pulse = (math.sin(billboardAnimTime) + 1) / 2
+		selectedBillboardGlow.Transparency = 0.3 + pulse * 0.5
+		selectedBillboardGlow.Thickness = 4 + pulse * 4
+	end
+	if selectedBillboardStroke then
+		local pulse = (math.sin(billboardAnimTime * 1.5) + 1) / 2
+		local r = 0.4 + pulse * 0.6
+		local g = 0.8 + pulse * 0.2
+		local b = 1
+		selectedBillboardStroke.Color = Color3.new(r, g, b)
+	end
+
 	local mouseTarget = mouse.Hit
 	if not mouseTarget then return end
 
@@ -546,6 +629,21 @@ mouse.Button2Down:Connect(function()
 	if ClientState.botPlacementMode then PlacementSystem.exitBotMode() end
 end)
 
+local function findUnitFromTarget(target)
+	if not target then return nil, nil end
+	local current = target
+	while current and current ~= workspace do
+		if current:IsA("Model") then
+			local gundamId = current:GetAttribute("GundamId")
+			if gundamId then return gundamId, "gundam" end
+			local botId = current:GetAttribute("BotId")
+			if botId then return botId, "bot" end
+		end
+		current = current.Parent
+	end
+	return nil, nil
+end
+
 mouse.Button1Down:Connect(function()
 	if ClientState.gundamPlacementMode then
 		if ClientState.isGundamPlacementValid then
@@ -563,6 +661,11 @@ mouse.Button1Down:Connect(function()
 			PlacementSystem.playErrorSound()
 		end
 		return
+	end
+
+	local pid, unitType = findUnitFromTarget(mouse.Target)
+	if pid and ide:getInterpreterType(pid) then
+		ide:openTab(pid)
 	end
 end)
 

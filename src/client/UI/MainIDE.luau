@@ -657,7 +657,7 @@ function MainIDE.create(parent, callbacks)
 	end
 
 	local function isEditing(data)
-		return data and data.localSource and data.originalSource and data.localSource ~= data.originalSource
+		return data and data.modified
 	end
 
 	local function onTextChanged()
@@ -668,10 +668,11 @@ function MainIDE.create(parent, callbacks)
 		if not data then return end
 
 		local newSource = editorTextBox.Text
-		local wasEditing = isEditing(data)
+		local wasModified = data.modified
 		data.localSource = newSource
 
-		if not wasEditing and isEditing(data) then
+		if not wasModified then
+			data.modified = true
 			if callbacks.onPause then
 				callbacks.onPause(currentTabId)
 			end
@@ -751,7 +752,7 @@ function MainIDE.create(parent, callbacks)
 			editor:setReadOnly(false)
 		else
 			runBtn.BackgroundColor3 = COLORS.success
-			gdbBtn.Text = "GDB"
+			gdbBtn.Text = "PAUSE"
 			gdbBtn.BackgroundColor3 = COLORS.warning
 			editor:setReadOnly(false)
 		end
@@ -1158,6 +1159,7 @@ function MainIDE.create(parent, callbacks)
 		if isEditing(data) and not data.compileOk then return false end
 
 		data.originalSource = data.localSource
+		data.modified = false
 		data.compileOk = true
 		data.compileError = nil
 		data.paused = false
@@ -1179,6 +1181,7 @@ function MainIDE.create(parent, callbacks)
 
 		if isEditing(data) then
 			data.localSource = data.originalSource
+			data.modified = false
 			data.compileOk = true
 			data.compileError = nil
 			data.paused = false
@@ -1211,6 +1214,7 @@ function MainIDE.create(parent, callbacks)
 		if data then
 			data.localSource = nil
 			data.originalSource = nil
+			data.modified = false
 			data.compileOk = true
 			data.compileError = nil
 		end
