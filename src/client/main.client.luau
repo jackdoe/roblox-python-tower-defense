@@ -645,6 +645,11 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
 		return
 	end
 
+	if ctrlHeld and input.KeyCode == Enum.KeyCode.G then
+		ide:unfocus()
+		return
+	end
+
 	if gameProcessed then return end
 
 	if input.KeyCode == Enum.KeyCode.G then

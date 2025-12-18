@@ -1151,6 +1151,11 @@ function MainIDE.create(parent, callbacks)
 
 	function ide:getText() return editor:getText() end
 
+	function ide:unfocus()
+		local textBox = editor:getTextBox()
+		if textBox then textBox:ReleaseFocus() end
+	end
+
 	function ide:triggerRun()
 		if not currentTabId then return false end
 		local data = interpreters[currentTabId]
@@ -1217,7 +1222,10 @@ function MainIDE.create(parent, callbacks)
 			data.modified = false
 			data.compileOk = true
 			data.compileError = nil
+			data.error = nil
 		end
+		stdErrLabel.Text = ""
+		editor:setErrorLine(-1)
 		if callbacks.onReset then callbacks.onReset(currentTabId) end
 	end)
 
