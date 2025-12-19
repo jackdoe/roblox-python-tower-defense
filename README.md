@@ -10,9 +10,8 @@ while True:
         self.set_target(nearest(enemies))
         self.fire(BULLET)
 ```
+![b](./screenshots/b.png)
 ![a](./screenshots/a.png)
-![b](./screenshots/c.png)
-![c](./screenshots/b.png)
 
 ## Ammo Types
 
